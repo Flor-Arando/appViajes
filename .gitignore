@@ -28,7 +28,7 @@ package-lock.json
 package.json
 tsconfig.json
 public/
-src/
+
 
 # Build
 target/
