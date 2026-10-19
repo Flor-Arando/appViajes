@@ -90,6 +90,8 @@
             </div>
         </section>
 
+
+
         <!-- botonicos con forma d pildora pa filtrar -->
         <section class="d-flex justify-content-center flex-wrap gap-2 mb-5">
             <button class="btn btn-dark rounded-pill px-4 filter-btn" data-filter="todos">Todos</button>
@@ -101,131 +103,70 @@
             <button class="btn btn-outline-secondary rounded-pill px-4 filter-btn" data-filter="africa">África</button>
         </section>
 
-        <!-- toas las tarjetas d los viajes, las meti a mano cn unsplash -->
-        <section class="row g-4" id="gallery">
-            
-            <article class="col-12 col-md-6 col-lg-4 flight-card" data-continent="europa">
-                <div class="card h-100 border-0 shadow-sm rounded-4 tarjeta-vuelo">
-                    <img src="https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=800&q=80" class="card-img-top img-vuelo rounded-top-4" alt="Roma">
-                    <div class="card-body">
-                        <h5 class="card-title fw-bold">Roma, Italia</h5>
-                        <p class="card-text text-secondary mb-0">Hace 2 meses</p>
-                    </div>
-                </div>
-            </article>
+        <section class="row justify-content-center align-items-end g-3 mb-4" aria-label="Filtros avanzados">
+            <div class="col-12 col-sm-6 col-lg-2">
+                <label for="fechaDesde" class="form-label small text-secondary mb-1">Desde</label>
+                <input type="date" id="fechaDesde" class="form-control">
+            </div>
+            <div class="col-12 col-sm-6 col-lg-2">
+                <label for="fechaHasta" class="form-label small text-secondary mb-1">Hasta</label>
+                <input type="date" id="fechaHasta" class="form-control">
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3">
 
-            <article class="col-12 col-md-6 col-lg-4 flight-card" data-continent="asia">
-                <div class="card h-100 border-0 shadow-sm rounded-4 tarjeta-vuelo">
-                    <img src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=800&q=80" class="card-img-top img-vuelo rounded-top-4" alt="Tokio">
-                    <div class="card-body">
-                        <h5 class="card-title fw-bold">Tokio, Japón</h5>
-                        <p class="card-text text-secondary mb-0">Hace 5 meses</p>
-                    </div>
-                </div>
-            </article>
-
-            <article class="col-12 col-md-6 col-lg-4 flight-card" data-continent="norteamerica">
-                <div class="card h-100 border-0 shadow-sm rounded-4 tarjeta-vuelo">
-                    <img src="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=800&q=80" class="card-img-top img-vuelo rounded-top-4" alt="Nueva York">
-                    <div class="card-body">
-                        <h5 class="card-title fw-bold">Nueva York, EE. UU.</h5>
-                        <p class="card-text text-secondary mb-0">Hace 8 meses</p>
-                    </div>
-                </div>
-            </article>
-
-            <article class="col-12 col-md-6 col-lg-4 flight-card" data-continent="sudamerica">
-                <div class="card h-100 border-0 shadow-sm rounded-4 tarjeta-vuelo">
-                    <img src="https://images.unsplash.com/photo-1526392060635-9d6019884377?auto=format&fit=crop&w=800&q=80" class="card-img-top img-vuelo rounded-top-4" alt="Cusco">
-                    <div class="card-body">
-                        <h5 class="card-title fw-bold">Cusco, Perú</h5>
-                        <p class="card-text text-secondary mb-0">Hace 1 año</p>
-                    </div>
-                </div>
-            </article>
-
-            <article class="col-12 col-md-6 col-lg-4 flight-card" data-continent="oceania">
-                <div class="card h-100 border-0 shadow-sm rounded-4 tarjeta-vuelo">
-                    <img src="https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=800&q=80" class="card-img-top img-vuelo rounded-top-4" alt="Sídney">
-                    <div class="card-body">
-                        <h5 class="card-title fw-bold">Sídney, Australia</h5>
-                        <p class="card-text text-secondary mb-0">Hace 1 año y medio</p>
-                    </div>
-                </div>
-            </article>
-
-            <article class="col-12 col-md-6 col-lg-4 flight-card" data-continent="africa">
-                <div class="card h-100 border-0 shadow-sm rounded-4 tarjeta-vuelo">
-                    <img src="https://images.unsplash.com/photo-1539650116574-8efeb43e2750?auto=format&fit=crop&w=800&q=80" class="card-img-top img-vuelo rounded-top-4" alt="El Cairo">
-                    <div class="card-body">
-                        <h5 class="card-title fw-bold">El Cairo, Egipto</h5>
-                        <p class="card-text text-secondary mb-0">Hace 2 años</p>
-                    </div>
-                </div>
-            </article>
-
+                <label for="filtroEstado" class="form-label small text-secondary mb-1">Estado del vuelo</label>
+                <select id="filtroEstado" class="form-select">
+                    <option value="todos">Todos los estados</option>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="confirmado">Confirmado</option>
+                    <option value="completado">Completado</option>
+                    <option value="cancelado">Cancelado</option>
+                </select>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-2">
+                <button type="button" class="btn btn-outline-secondary w-100" id="limpiarFiltros">Limpiar filtros</button>
+            </div>
         </section>
 
-        <!-- si busca algo q no esta, q salga esto pa q no se qede en blanco el html -->
+        <p id="resultCount" class="text-center text-secondary mb-3" aria-live="polite"></p>
+
+        
+        <!-- Las tarjetas se cargan desde el historial local. -->
+        <section class="row g-4" id="gallery" aria-live="polite"></section>
+
+
+        <div id="emptyHistory" class="text-center mt-5" style="display: none;">
+            <i class="bi bi-airplane fs-1 text-secondary mb-3"></i>
+            <h4 class="text-dark">Tu historial está vacío</h4>
+            <p class="text-secondary">Los vuelos de ejemplo y los cambios que hagas se guardan en este navegador.</p>
+            <a href="pago.html" class="btn btn-outline-primary rounded-pill">Probar el pago de demostración</a>
+        </div>
+
+        <div id="storageError" class="alert alert-warning d-none mt-4" role="alert"></div>
+        <!-- Mensaje cuando los filtros no encuentran coincidencias. -->
         <div id="noResults" class="text-center mt-5" style="display: none;">
             <i class="bi bi-search fs-1 text-secondary mb-3"></i>
             <h4 class="text-dark">No se encontraron vuelos</h4>
             <p class="text-secondary">Prueba con otra búsqueda.</p>
         </div>
 
+    <div class="modal fade" id="flightDetailsModal" tabindex="-1" aria-labelledby="flightDetailsTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5" id="flightDetailsTitle">Detalles del vuelo</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <dl id="flightDetails" class="mb-0"></dl>
+                </div>
+            </div>
+        </div>
+    </div>
     </main>
 
-    <!-- aqui el js q hace la magia -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const botonesFiltro = document.querySelectorAll('.filter-btn');
-            const tarjetas = document.querySelectorAll('.flight-card');
-            const buscador = document.getElementById('searchInput');
-            const mensajeVacio = document.getElementById('noResults');
-
-            // funcion tocha pa filtrar la movida
-            function aplicarFiltros() {
-                const continenteActivo = document.querySelector('.filter-btn.btn-dark').getAttribute('data-filter');
-                const textoBuscado = buscador.value.toLowerCase().trim();
-                let tarjetasVisibles = 0;
-
-                tarjetas.forEach(tarjeta => {
-                    const continente = tarjeta.getAttribute('data-continent');
-                    const titulo = tarjeta.querySelector('.card-title').textContent.toLowerCase();
-
-                    const coincideContinente = (continenteActivo === 'todos' || continente === continenteActivo);
-                    const coincideTexto = titulo.includes(textoBuscado);
-
-                    if (coincideContinente && coincideTexto) {
-                        tarjeta.style.display = 'block';
-                        tarjetasVisibles++;
-                    } else {
-                        tarjeta.style.display = 'none';
-                    }
-                });
-
-                // muestro el mensaje ese d no hay na o lo oculto
-                mensajeVacio.style.display = (tarjetasVisibles === 0) ? 'block' : 'none';
-            }
-
-            // recorro to los botones y le meto el click
-            botonesFiltro.forEach(boton => {
-                boton.addEventListener('click', (e) => {
-                    // le kito el fondo oscuro a todos y se lo pongo al q he clicao xd
-                    botonesFiltro.forEach(b => {
-                        b.classList.remove('btn-dark');
-                        b.classList.add('btn-outline-secondary');
-                    });
-                    e.target.classList.remove('btn-outline-secondary');
-                    e.target.classList.add('btn-dark');
-
-                    aplicarFiltros();
-                });
-            });
-
-            // pa q se actualize segun vas escriviendo loko
-            buscador.addEventListener('input', aplicarFiltros);
-        });
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="historialVuelos.js"></script>
 </body>
 </html>
+<!-- josep -->
