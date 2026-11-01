@@ -10,7 +10,10 @@ import java.io.Serializable;
 @Named
 @ViewScoped
 public class RegisterBean implements Serializable {
-
+    // usuarioBean lo inyectamos aca 
+    // falta comprobar que no exista este usuario creado con los de la lista.
+    // si todo esta ok, se crea el usuario y se agrega a la lista de usuarios mockeados como
+    // getUsuariosRegistrados() y se muestra un mensaje de exito.
     private static final long serialVersionUID = 1L;
 
     @Inject
@@ -20,6 +23,38 @@ public class RegisterBean implements Serializable {
     private String email;
     private String password;
     private String passwordConfirmation;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPasswordConfirmation() {
+        return passwordConfirmation;
+    }
+
+    public void setPasswordConfirmation(String passwordConfirmation) {
+        this.passwordConfirmation = passwordConfirmation;
+    }
 
     // Valida los datos y registra la cuenta si cumple todas las reglas.
     public void register() {
@@ -56,20 +91,4 @@ public class RegisterBean implements Serializable {
         passwordConfirmation = null;
     }
 
-
-    public String getName() { return name; }
-
-    public void setName(String name) { this.name = name; }
-
-    public String getEmail() { return email; }
-
-    public void setEmail(String email) { this.email = email; }
-
-    public String getPassword() { return password; }
-
-    public void setPassword(String password) { this.password = password; }
-
-    public String getPasswordConfirmation() { return passwordConfirmation; }
-
-    public void setPasswordConfirmation(String passwordConfirmation) { this.passwordConfirmation = passwordConfirmation; }
 }

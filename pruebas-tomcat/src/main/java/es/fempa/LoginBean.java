@@ -8,7 +8,7 @@ import jakarta.inject.Named;
 import java.io.Serializable;
 
 @Named
-@ViewScoped
+@ViewScoped // ok - aqui va usuario y password nada mas. 
 public class LoginBean implements Serializable {
 
     private static final long serialVersionUID = 1L;

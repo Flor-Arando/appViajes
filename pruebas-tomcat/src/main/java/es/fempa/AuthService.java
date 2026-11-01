@@ -4,8 +4,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@ApplicationScoped
-public class AuthService {
+@ApplicationScoped //-- usar uno de sesion no este.
+public class AuthService { 
 
     private final Map<String, User> users = new ConcurrentHashMap<>();
 
