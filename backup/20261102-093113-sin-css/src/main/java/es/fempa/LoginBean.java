@@ -3,20 +3,16 @@ package es.fempa;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.io.Serializable;
 
 @Named
-@ViewScoped // ok - aqui va usuario y password nada mas. 
+@ViewScoped
 public class LoginBean implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    @Inject
-    private AuthService authService;
+    
     private String username;
     private String password;
+    private String mensaje;
 
     public String getUsername() {
         return username;
@@ -34,20 +30,31 @@ public class LoginBean implements Serializable {
         this.password = password;
     }
 
-    // Valida los datos y muestra el resultado del inicio de sesión.
-    public void login() {
-        String usuario = username == null ? "" : username.trim();
-        String clave = password == null ? "" : password;
+    public String getMensaje() {
+        return mensaje;
+    }
 
-        if (usuario.isEmpty() || clave.isEmpty()) {
+    public void setMensaje(String mensaje) {
+        this.mensaje = mensaje;
+    }
+
+    public void login() {
+        if(username.isEmpty() || password.isEmpty()) {
+            mensaje = "El usuario y la contraseña son obligatorios";
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "El usuario y la contraseña son obligatorios", null));
             return;
         }
 
-        if (authService.authenticate(usuario, clave)) {
+        //COMPROBAR QUE EXISTA EL USUARIO
+        //EL USUARIO BUENO SERA user Y EL PASSWORD BUENO SERA pass
+        if(username.equals("user") && password.equals("pass")) {
+            mensaje = "Login exitoso";
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Login exitoso", null));
         } else {
+            mensaje = "Usuario o contraseña incorrectos";
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Usuario o contraseña incorrectos", null));
         }
     }
+
+
 }

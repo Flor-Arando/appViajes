@@ -7,11 +7,8 @@ import jakarta.inject.Named;
 import java.io.Serializable;
 
 @Named
-@SessionScoped // id-sesionIniciada-nombre-
-public class UsuarioBean implements Serializable {
-    // este podria ser una vista para ver el usuario y su nombre, y el mensaje de saludo.
-    // es una lista de usuarios mockeados creados como objetos 
-    
+@ViewScoped
+public class HolaBean implements Serializable {
 
     private String nombre;
     private String mensaje;

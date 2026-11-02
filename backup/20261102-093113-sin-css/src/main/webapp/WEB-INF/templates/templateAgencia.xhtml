@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="primefaces"
+      xmlns:viajes="http://xmlns.jcp.org/jsf/composite/components">
+
+<h:head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <title>
+        <ui:insert name="title">Horizonte | Agencia de Viajes</ui:insert>
+    </title>
+
+    <!-- Tipografía -->
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&amp;display=swap"
+          rel="stylesheet"/>
+
+    <!-- Bootstrap (solo como apoyo de maquetación) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet"/>
+
+    <!-- Estilos propios de la agencia -->
+    <h:outputStylesheet name="css/agencia.css"/>
+</h:head>
+
+<h:body>
+
+    <!-- Banner reutilizable (componente compuesto) -->
+    <viajes:bannerOld/>
+
+    <!-- Contenido propio de cada página -->
+    <main class="agencia-contenido">
+        <ui:insert name="content">
+            Contenido de la página
+        </ui:insert>
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="agencia-pie">
+        <div class="agencia-pie-contenido">
+            <p class="agencia-pie-marca">Horizonte · Agencia de Viajes</p>
+            <p class="agencia-pie-texto">
+                Proyecto de ejemplo con Jakarta Faces, PrimeFaces y Bootstrap.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Mensajes globales -->
+    <p:growl id="mensajes" showDetail="true" life="6000"/>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+</h:body>
+
+</html>
