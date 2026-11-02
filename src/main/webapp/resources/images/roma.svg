@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+    <defs>
+        <linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#fb923c"/>
+            <stop offset="60%" stop-color="#fcd34d"/>
+            <stop offset="100%" stop-color="#fef3c7"/>
+        </linearGradient>
+        <mask id="arcos">
+            <rect width="600" height="400" fill="#ffffff"/>
+            <g fill="#000000">
+                <path d="M188 306 v-32 a14 14 0 0 1 28 0 v32 Z"/>
+                <path d="M236 306 v-32 a14 14 0 0 1 28 0 v32 Z"/>
+                <path d="M284 306 v-32 a14 14 0 0 1 28 0 v32 Z"/>
+                <path d="M332 306 v-32 a14 14 0 0 1 28 0 v32 Z"/>
+                <path d="M380 306 v-32 a14 14 0 0 1 28 0 v32 Z"/>
+                <path d="M204 252 v-14 a10 10 0 0 1 20 0 v14 Z"/>
+                <path d="M252 252 v-14 a10 10 0 0 1 20 0 v14 Z"/>
+                <path d="M300 252 v-14 a10 10 0 0 1 20 0 v14 Z"/>
+                <path d="M348 252 v-14 a10 10 0 0 1 20 0 v14 Z"/>
+                <path d="M396 252 v-14 a10 10 0 0 1 20 0 v14 Z"/>
+            </g>
+        </mask>
+    </defs>
+
+    <rect width="600" height="400" fill="url(#cielo)"/>
+    <circle cx="120" cy="100" r="46" fill="#fff7ed" opacity="0.85"/>
+
+    <path d="M170 306 v-86 a130 74 0 0 1 260 0 v86 Z" fill="#1e293b" mask="url(#arcos)"/>
+    <rect x="150" y="300" width="300" height="22" rx="6" fill="#0f172a"/>
+
+    <path d="M0 322 h600 v78 H0 Z" fill="#334155"/>
+    <path d="M0 322 h600 v14 H0 Z" fill="#475569" opacity="0.6"/>
+
+    <g fill="#14532d">
+        <rect x="70" y="250" width="8" height="72"/>
+        <ellipse cx="74" cy="240" rx="34" ry="16"/>
+        <rect x="512" y="262" width="7" height="60"/>
+        <ellipse cx="515" cy="252" rx="28" ry="13"/>
+    </g>
+</svg>

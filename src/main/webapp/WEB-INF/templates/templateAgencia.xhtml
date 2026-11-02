@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="primefaces">
+
+<h:head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <title>
+        <ui:insert name="title">Horizonte | Agencia de Viajes</ui:insert>
+    </title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet"/>
+</h:head>
+
+<h:body styleClass="bg-light d-flex flex-column min-vh-100">
+
+    <!-- Banner de la agencia de viajes -->
+    <header class="position-relative overflow-hidden bg-dark text-white">
+
+        <!-- Imagen de fondo del banner -->
+        <h:graphicImage name="images/banner.svg"
+                        alt=""
+                        styleClass="position-absolute top-0 start-0 w-100 h-100 object-fit-cover opacity-50"/>
+
+        <!-- Contenido sobre la imagen -->
+        <div class="position-relative container px-3 px-md-4 py-4">
+
+            <!-- Barra superior: logo + área de clientes -->
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+
+                <h:link outcome="/dashboard"
+                        styleClass="d-flex align-items-center gap-2 text-white text-decoration-none">
+                    <h:graphicImage name="images/logo.svg"
+                                    width="56"
+                                    height="56"
+                                    styleClass="rounded-4 shadow"
+                                    alt="Logo de la agencia de viajes"/>
+                    <span class="d-flex flex-column lh-1">
+                        <span class="fs-4 fw-bold">Horizonte</span>
+                        <span class="small text-uppercase text-white-50">Agencia de Viajes</span>
+                    </span>
+                </h:link>
+
+                <nav class="d-flex flex-wrap align-items-center gap-2" aria-label="Área de clientes">
+                    <h:link outcome="/login"
+                            value="Iniciar Sesión"
+                            styleClass="btn btn-outline-light btn-sm px-3"/>
+                    <h:link outcome="/registro"
+                            value="Crear cuenta"
+                            styleClass="btn btn-warning btn-sm px-3 fw-semibold"/>
+                </nav>
+
+            </div>
+
+            <!-- Texto del banner -->
+            <div class="mt-4 mt-md-5 pb-2">
+                <h1 class="display-5 fw-bold">
+                    <ui:insert name="bannerTitulo">Tu próximo destino empieza aquí</ui:insert>
+                </h1>
+                <p class="fs-5 text-white-50 mb-0">
+                    <ui:insert name="bannerSubtitulo">Vuelos, hoteles y experiencias inolvidables al mejor precio.</ui:insert>
+                </p>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Contenido propio de cada página -->
+    <main class="container flex-grow-1 py-4">
+        <ui:insert name="content">
+            Contenido de la página
+        </ui:insert>
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="bg-dark text-white text-center py-4 mt-auto">
+        <div class="container">
+            <p class="fw-semibold mb-1">Horizonte · Agencia de Viajes</p>
+            <p class="small text-white-50 mb-0">
+                Proyecto de ejemplo con Jakarta Faces, PrimeFaces y Bootstrap.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Mensajes globales -->
+    <p:growl id="mensajes" showDetail="true" life="6000"/>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+</h:body>
+
+</html>
