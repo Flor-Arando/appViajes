@@ -26,8 +26,9 @@
                             <div class="d-flex align-items-center gap-2 px-2">
                                 <i class="pi pi-calendar text-success fs-5"></i>
                                 <p:datePicker id="fecha"
-                                              value="#{dashboardBean.fecha}"
-                                              placeholder="¿Cuándo?"
+                                              value="#{dashboardBean.rangoFechas}"
+                                              selectionMode="range"
+                                              placeholder="¿Cuándo? (Salida - Vuelta)"
                                               pattern="dd/MM/yyyy"
                                               inputStyleClass="form-control border-0 shadow-none"
                                               showIcon="false"

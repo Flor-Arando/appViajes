@@ -31,7 +31,7 @@ public class DashboardBean implements Serializable {
     private static final DateTimeFormatter FORMATO_FECHA =
             DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.forLanguageTag("es-ES"));
 
-    private LocalDate fecha;
+    private List<LocalDate> rangoFechas;
     private Ciudad ciudadSeleccionada;
 
     private List<Ciudad> ciudades;
@@ -151,8 +151,18 @@ public class DashboardBean implements Serializable {
         if (ciudadSeleccionada != null) {
             mensaje.append(" Destino seleccionado: ").append(ciudadSeleccionada.getNombre()).append('.');
         }
-        if (fecha != null) {
-            mensaje.append(" Fecha de salida: ").append(fecha.format(FORMATO_FECHA)).append('.');
+        if (rangoFechas != null && !rangoFechas.isEmpty()) {
+            if (rangoFechas.size() >= 2 && rangoFechas.get(1) != null) {
+                mensaje.append(" Fechas: ")
+                        .append(rangoFechas.get(0).format(FORMATO_FECHA))
+                        .append(" - ")
+                        .append(rangoFechas.get(1).format(FORMATO_FECHA))
+                        .append('.');
+            } else if (rangoFechas.get(0) != null) {
+                mensaje.append(" Fecha de salida: ")
+                        .append(rangoFechas.get(0).format(FORMATO_FECHA))
+                        .append('.');
+            }
         }
 
         anadirMensaje(FacesMessage.SEVERITY_INFO, "Buscador", mensaje.toString());
@@ -176,12 +186,12 @@ public class DashboardBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severidad, titulo, detalle));
     }
 
-    public LocalDate getFecha() {
-        return fecha;
+    public List<LocalDate> getRangoFechas() {
+        return rangoFechas;
     }
 
-    public void setFecha(LocalDate fecha) {
-        this.fecha = fecha;
+    public void setRangoFechas(List<LocalDate> rangoFechas) {
+        this.rangoFechas = rangoFechas;
     }
 
     public Ciudad getCiudadSeleccionada() {
