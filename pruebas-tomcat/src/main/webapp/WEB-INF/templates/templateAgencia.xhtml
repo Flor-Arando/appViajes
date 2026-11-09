@@ -51,12 +51,33 @@
                 </h:link>
 
                 <nav class="d-flex flex-wrap align-items-center gap-2" aria-label="Área de clientes">
-                    <h:link outcome="/login"
-                            value="Iniciar Sesión"
-                            styleClass="btn btn-outline-light btn-sm px-3"/>
-                    <h:link outcome="/register"
-                            value="Crear cuenta"
-                            styleClass="btn btn-warning btn-sm px-3 fw-semibold"/>
+
+                    <!-- Opción 1: sin sesión -> botones de acceso. -->
+                    <h:panelGroup layout="block" styleClass="d-flex flex-wrap gap-2"
+                                  rendered="#{not usuarioBean.logged}">
+                        <h:link outcome="/login"
+                                value="Iniciar Sesión"
+                                styleClass="btn btn-outline-light btn-sm px-3"/>
+                        <h:link outcome="/register"
+                                value="Crear cuenta"
+                                styleClass="btn btn-warning btn-sm px-3 fw-semibold"/>
+                    </h:panelGroup>
+
+                    <!-- Opción 2: con sesión -> saludo y enlaces de texto. -->
+                    <h:panelGroup layout="block" styleClass="d-flex flex-column align-items-end lh-1"
+                                  rendered="#{usuarioBean.logged}">
+                        <span class="text-white small mb-1">Hola #{usuarioBean.nombreUsuario}</span>
+                        <span class="d-flex align-items-center gap-2 small">
+                            <h:link outcome="/perfil" value="Ver perfil"
+                                    styleClass="link-light text-decoration-underline"/>
+                            <span class="text-white-50" aria-hidden="true">|</span>
+                            <h:commandLink action="#{usuarioBean.logout}"
+                                           styleClass="link-light text-decoration-none">
+                                <h:outputText value="Cerrar Sesión"/>
+                            </h:commandLink>
+                        </span>
+                    </h:panelGroup>
+
                 </nav>
 
             </div>

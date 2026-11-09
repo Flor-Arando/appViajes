@@ -1,0 +1,239 @@
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="jakarta.faces.html"
+        xmlns:f="jakarta.faces.core"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:p="primefaces"
+        template="/WEB-INF/templates/templateAgencia.xhtml">
+
+    <ui:define name="title">
+        Inicio | MorfeoTrip Agencia de Viajes
+    </ui:define>
+
+    <ui:define name="content">
+
+        <!-- =========================================================
+             BUSCADOR (de momento no realiza búsquedas reales)
+             ========================================================= -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-12 col-xl-10">
+
+                <h:form id="buscadorForm" styleClass="card border-0 shadow-sm rounded-4 p-2">
+
+                    <div class="row g-2 align-items-center">
+
+                        <div class="col-12 col-md-4">
+                            <div class="d-flex align-items-center gap-2 px-2">
+                                <i class="pi pi-calendar text-success fs-5"></i>
+                                <p:datePicker id="fecha"
+                                              widgetVar="wdFecha"
+                                              value="#{dashboardBean.rangoFechas}"
+                                              selectionMode="range"
+                                              placeholder="¿Cuándo? (Salida - Vuelta)"
+                                              pattern="dd/MM/yyyy"
+                                              inputStyleClass="form-control border-0 shadow-none"
+                                              showIcon="false"
+                                              readonlyInput="true"
+                                              showButtonBar="true"
+                                              hideOnRangeSelection="false"
+                                              styleClass="flex-grow-1"/>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-4">
+                            <div class="d-flex align-items-center gap-2 px-2">
+                                <i class="pi pi-map-marker text-success fs-5"></i>
+                                <h:selectOneMenu id="ciudad"
+                                                 value="#{dashboardBean.ciudadSeleccionada}"
+                                                 title="¿Dónde?"
+                                                 styleClass="form-select border-0 shadow-none flex-grow-1">
+                                    <f:selectItem itemValue="#{null}"
+                                                  itemLabel="¿Dónde?"
+                                                  noSelectionOption="true"/>
+                                    <f:selectItems value="#{dashboardBean.ciudades}"
+                                                   var="ciudad"
+                                                   itemLabel="#{ciudad.nombre}"
+                                                   itemValue="#{ciudad}"/>
+                                </h:selectOneMenu>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-4 d-grid">
+                            <p:commandButton value="Buscar"
+                                             icon="pi pi-search"
+                                             action="#{dashboardBean.buscar}"
+                                             update="@form :mensajes"
+                                             styleClass="btn bg-success text-white border-0 rounded-pill"/>
+                        </div>
+
+                    </div>
+
+                </h:form>
+
+            </div>
+        </div>
+
+
+        <!-- =========================================================
+             ÚLTIMAS OFERTAS
+             ========================================================= -->
+        <section class="mt-4">
+
+            <div class="text-center mb-4">
+                <h2 class="display-6 fw-bold mb-2">¡Últimas Ofertas!</h2>
+                <hr class="w-25 mx-auto border border-success border-3 opacity-100 my-3"/>
+                <p class="text-muted mb-0">
+                    Paquetes con los mejores precios de la temporada
+                </p>
+            </div>
+
+            <h:form id="formOfertas">
+                <p:carousel id="carruselOfertas"
+                            value="#{dashboardBean.ofertas}"
+                            var="oferta"
+                            numVisible="3"
+                            numScroll="1"
+                            circular="true"
+                            paginator="false"
+                            autoplayInterval="6000"
+                            responsiveOptions="#{dashboardBean.opcionesResponsive}"
+                            styleClass="pb-2">
+
+                    <div class="p-2 h-100">
+                        <div class="card h-100 border-0 shadow-sm">
+
+                            <div class="position-relative">
+                                <h:graphicImage value="#{oferta.imagen}"
+                                                alt="#{oferta.titulo}"
+                                                styleClass="card-img-top"/>
+                                <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2">
+                                    Oferta
+                                </span>
+                                <span class="badge bg-dark position-absolute bottom-0 end-0 m-2 fs-6">
+                                    #{oferta.precioFormateado}
+                                </span>
+                            </div>
+
+                            <div class="card-body d-flex flex-column">
+                                <h3 class="card-title h5 fw-bold">#{oferta.titulo}</h3>
+
+                                <p class="text-success small mb-2">
+                                    <i class="pi pi-map-marker me-1"></i>
+                                    #{oferta.destino}
+                                </p>
+
+                                <p class="card-text text-muted small">
+                                    #{oferta.descripcion}
+                                </p>
+
+                                <div class="d-flex justify-content-between border-top pt-2 mt-auto small text-muted">
+                                    <span>
+                                        <i class="pi pi-clock me-1 text-warning"></i>
+                                        #{oferta.duracion}
+                                    </span>
+                                    <span>
+                                        <i class="pi pi-star-fill me-1 text-warning"></i>
+                                        #{oferta.valoracionTexto}
+                                    </span>
+                                </div>
+
+                                <p:commandButton value="Reservar"
+                                                 icon="pi pi-send"
+                                                 action="#{dashboardBean.reservar(oferta)}"
+                                                 update=":mensajes"
+                                                 styleClass="btn bg-success text-white border-0 w-100 mt-3"/>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </p:carousel>
+            </h:form>
+
+        </section>
+
+
+        <!-- =========================================================
+             TOP DESTINOS
+             ========================================================= -->
+        <section class="mt-5">
+
+            <div class="text-center mb-4">
+                <h2 class="display-6 fw-bold mb-2">¡Top Destinos!</h2>
+                <hr class="w-25 mx-auto border border-success border-3 opacity-100 my-3"/>
+                <p class="text-muted mb-0">
+                    Los lugares que más enamoran a nuestros viajeros
+                </p>
+            </div>
+
+            <h:form id="formDestinos">
+                <p:carousel id="carruselDestinos"
+                            value="#{dashboardBean.topDestinos}"
+                            var="destino"
+                            numVisible="3"
+                            numScroll="1"
+                            circular="true"
+                            paginator="false"
+                            autoplayInterval="7000"
+                            responsiveOptions="#{dashboardBean.opcionesResponsive}"
+                            styleClass="pb-2">
+
+                    <div class="p-2 h-100">
+                        <div class="card h-100 border-0 shadow-sm">
+
+                            <div class="position-relative">
+                                <h:graphicImage value="#{destino.imagen}"
+                                                alt="#{destino.titulo}"
+                                                styleClass="card-img-top"/>
+                                <span class="badge bg-success position-absolute top-0 start-0 m-2">
+                                    Top
+                                </span>
+                                <span class="badge bg-dark position-absolute bottom-0 end-0 m-2 fs-6">
+                                    #{destino.precioFormateado}
+                                </span>
+                            </div>
+
+                            <div class="card-body d-flex flex-column">
+                                <h3 class="card-title h5 fw-bold">#{destino.titulo}</h3>
+
+                                <p class="text-success small mb-2">
+                                    <i class="pi pi-map-marker me-1"></i>
+                                    #{destino.destino}
+                                </p>
+
+                                <p class="card-text text-muted small">
+                                    #{destino.descripcion}
+                                </p>
+
+                                <div class="d-flex justify-content-between border-top pt-2 mt-auto small text-muted">
+                                    <span>
+                                        <i class="pi pi-clock me-1 text-warning"></i>
+                                        #{destino.duracion}
+                                    </span>
+                                    <span>
+                                        <i class="pi pi-star-fill me-1 text-warning"></i>
+                                        #{destino.valoracionTexto}
+                                    </span>
+                                </div>
+
+                                <p:commandButton value="Reservar"
+                                                 icon="pi pi-send"
+                                                 action="#{dashboardBean.reservar(destino)}"
+                                                 update=":mensajes"
+                                                 styleClass="btn bg-success text-white border-0 w-100 mt-3"/>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </p:carousel>
+            </h:form>
+
+        </section>
+
+        <!-- Botón "Aplicar" en la barra del calendario de rango -->
+        <h:outputScript name="js/datepicker-rango.js" target="body"/>
+
+    </ui:define>
+
+</ui:composition>

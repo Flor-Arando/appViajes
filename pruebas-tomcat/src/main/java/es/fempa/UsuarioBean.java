@@ -15,6 +15,8 @@ public class UsuarioBean implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private List<Usuario> usuariosRegistrados = new ArrayList<>();
+    // Usuario autenticado en la sesión actual; null mientras no se inicia sesión.
+    private Usuario usuarioActual;
     private String nombre;
     private String mensaje;
     private int value = 50;
@@ -65,10 +67,35 @@ public class UsuarioBean implements Serializable {
         for (Usuario usuario : usuariosRegistrados) {
             if (usuario.getUsername().equalsIgnoreCase(normalizedUsername)
                     && usuario.getPassword().equals(password)) {
+                // Guarda el usuario en la sesión: es lo que hace estar "logueado".
+                this.usuarioActual = usuario;
                 return true;
             }
         }
         return false;
+    }
+
+    // True mientras haya un usuario autenticado en esta sesión.
+    public boolean isLogged() {
+        return usuarioActual != null;
+    }
+
+    // Nombre para mostrar en la cabecera; vacío si no hay sesión iniciada.
+    public String getNombreUsuario() {
+        return usuarioActual == null ? "" : usuarioActual.getNombre();
+    }
+
+    // Cierra la sesión: vacía el usuario actual y invalida la HttpSession.
+    public String logout() {
+        this.usuarioActual = null;
+        FacesContext context = FacesContext.getCurrentInstance();
+        Object rawSession = context.getExternalContext().getSession(false);
+        if (rawSession instanceof jakarta.servlet.http.HttpSession session) {
+            session.invalidate();
+        } else {
+            context.getExternalContext().invalidateSession();
+        }
+        return "dashboard?faces-redirect=true";
     }
 
     private String normalizeUsername(String username) {
