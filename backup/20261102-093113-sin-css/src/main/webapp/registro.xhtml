@@ -1,0 +1,68 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="primefaces"
+    template="/WEB-INF/templates/templateAgencia.xhtml">
+
+    <ui:define name="title">
+        Crear cuenta | Horizonte Agencia de Viajes
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="formulario-contenedor">
+            <div class="formulario-tarjeta">
+
+                <h2 class="formulario-titulo">Crear cuenta</h2>
+                <p class="formulario-subtitulo">
+                    Regístrate para gestionar tus reservas y recibir ofertas exclusivas.
+                </p>
+
+                <h:form id="registroForm">
+
+                    <div class="formulario-campo">
+                        <p:outputLabel for="usuario" value="Usuario"/>
+                        <p:inputText id="usuario"
+                                     value="#{registroBean.username}"
+                                     placeholder="Elige un nombre de usuario"
+                                     styleClass="formulario-input"/>
+                    </div>
+
+                    <div class="formulario-campo">
+                        <p:outputLabel for="nombre" value="Nombre completo"/>
+                        <p:inputText id="nombre"
+                                     value="#{registroBean.nombre}"
+                                     placeholder="Tu nombre y apellidos"
+                                     styleClass="formulario-input"/>
+                    </div>
+
+                    <div class="formulario-campo">
+                        <p:outputLabel for="password" value="Contraseña"/>
+                        <p:password id="password"
+                                    value="#{registroBean.password}"
+                                    placeholder="Crea una contraseña"
+                                    styleClass="formulario-input"
+                                    feedback="false"/>
+                    </div>
+
+                    <p:commandButton value="Crear cuenta"
+                                     icon="pi pi-user-plus"
+                                     action="#{registroBean.registrar}"
+                                     update="@form :mensajes"
+                                     styleClass="formulario-boton"/>
+
+                    <p class="formulario-enlace">
+                        ¿Ya tienes cuenta?
+                        <h:link outcome="/login" value="Inicia sesión"/>
+                    </p>
+
+                </h:form>
+
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

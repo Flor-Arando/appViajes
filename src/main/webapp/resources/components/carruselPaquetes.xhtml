@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="jakarta.faces.composite"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets">
+
+<cc:interface>
+    <cc:attribute name="paquetes" type="java.util.List" required="true"/>
+    <cc:attribute name="ariaLabel" type="java.lang.String" default="Paquetes de viaje"/>
+</cc:interface>
+<cc:implementation>
+
+    <style>
+        .carrusel-viewport { overflow-x: auto; scroll-behavior: smooth; scrollbar-width: none; }
+        .carrusel-viewport::-webkit-scrollbar { display: none; }
+        .carrusel-track { display: flex; gap: 1rem; }
+        .carrusel-paquete { flex: 0 0 86%; scroll-snap-align: start; }
+        .carrusel-viewport { scroll-snap-type: x mandatory; }
+        .carrusel-control { width: 2.5rem; height: 2.5rem; color: #64258b; border-color: #d8c5e4; }
+        .carrusel-control:hover { color: #fff; background: #64258b; border-color: #64258b; }
+        .carrusel-indicadores { display: flex; justify-content: center; gap: .55rem; margin-top: 1rem; }
+        .carrusel-indicador { width: .65rem; height: .65rem; padding: 0; border: 0; border-radius: 50%; background: #d8c5e4; }
+        .carrusel-indicador.active { width: 1.7rem; border-radius: 1rem; background: #64258b; }
+        @media (min-width: 576px) { .carrusel-paquete { flex-basis: 48%; } }
+        @media (min-width: 1200px) { .carrusel-paquete { flex-basis: calc(25% - .75rem); } }
+        @media (max-width: 575.98px) { .carrusel-paquete { flex-basis: 100%; } }
+    </style>
+
+
+
+    <section class="carrusel-paquetes" aria-label="#{cc.attrs.ariaLabel}">
+        <div class="d-flex justify-content-end gap-2 mb-3">
+            <button type="button" class="btn btn-outline-secondary rounded-circle carrusel-control"
+                    aria-label="Desplazar paquetes hacia la izquierda"
+                    onclick="movePackageGroup(this, -1)">
+                <i class="bi bi-chevron-left" aria-hidden="true"></i>
+            </button>
+            <button type="button" class="btn btn-outline-secondary rounded-circle carrusel-control"
+                    aria-label="Desplazar paquetes hacia la derecha"
+                    onclick="movePackageGroup(this, 1)">
+                <i class="bi bi-chevron-right" aria-hidden="true"></i>
+            </button>
+        </div>
+        <div class="carrusel-viewport" role="region" aria-label="Paquetes disponibles">
+            <h:panelGroup id="track" layout="block" styleClass="carrusel-track">
+                <ui:repeat value="#{cc.attrs.paquetes}" var="paquete">
+                    <article class="carrusel-paquete">
+                        <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden package-card">
+                            <div class="package-image-wrap">
+                                <img class="card-img-top package-image" src="#{paquete.imagen}" alt="#{paquete.imagenAlt}"/>
+                                <span class="badge rounded-pill duration-tag px-3 py-2">#{paquete.duracion} días</span>
+                            </div>
+
+
+
+
+
+                            <div class="card-body d-flex flex-column p-3 p-lg-4">
+                                <h3 class="h5 fw-bold package-title mb-1">#{paquete.nombre}</h3>
+                                <p class="small text-secondary mb-3">Paquete · #{paquete.pais}</p>
+                                <p class="small mb-1"><strong>Salidas:</strong> #{paquete.salidas}</p>
+                                <p class="small text-secondary mb-3"><strong class="text-dark">Visitando:</strong> #{paquete.visitando}</p>
+                                <div class="mt-auto d-flex justify-content-between align-items-end gap-2">
+                                    <p class="price text-end mb-0 ms-auto"><small class="d-block">desde</small><strong class="fs-2">#{paquete.precio}</strong></p>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </ui:repeat>
+            </h:panelGroup>
+        </div>
+        <div class="carrusel-indicadores" role="group" aria-label="Grupos de paquetes">
+            <button type="button" class="carrusel-indicador active" aria-label="Mostrar grupo 1, paquetes 1 a 4" aria-current="true" onclick="showPackageGroup(this, 0)"></button>
+            <button type="button" class="carrusel-indicador" aria-label="Mostrar grupo 2, paquetes 5 a 8" onclick="showPackageGroup(this, 1)"></button>
+            <button type="button" class="carrusel-indicador" aria-label="Mostrar grupo 3, paquetes 9 a 12" onclick="showPackageGroup(this, 2)"></button>
+        </div>
+    </section>
+    <script type="text/javascript">
+        function showPackageGroup(button, group) {
+            const carousel = button.closest('.carrusel-paquetes');
+            const viewport = carousel.querySelector('.carrusel-viewport');
+            const cards = carousel.querySelectorAll('.carrusel-paquete');
+            const firstCard = cards[group * 4];
+            if (!firstCard) return;
+            viewport.scrollTo({ left: firstCard.offsetLeft, behavior: 'smooth' });
+            carousel.querySelectorAll('.carrusel-indicador').forEach((dot, index) => {
+                dot.classList.toggle('active', index === group);
+                if (index === group) dot.setAttribute('aria-current', 'true');
+                else dot.removeAttribute('aria-current');
+            });
+        }
+
+        function movePackageGroup(button, direction) {
+            const carousel = button.closest('.carrusel-paquetes');
+            const dots = Array.from(carousel.querySelectorAll('.carrusel-indicador'));
+            const current = dots.findIndex(dot => dot.classList.contains('active'));
+            const next = Math.max(0, Math.min(dots.length - 1, current + direction));
+            showPackageGroup(dots[next], next);
+        }
+    </script>
+</cc:implementation>
+</html>

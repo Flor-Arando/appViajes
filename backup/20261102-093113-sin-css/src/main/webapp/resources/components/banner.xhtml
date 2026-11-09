@@ -1,0 +1,66 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:cc="jakarta.faces.composite"
+    xmlns:h="jakarta.faces.html"
+    xmlns:ui="jakarta.faces.facelets">
+
+    <!--
+        Componente compuesto reutilizable: BANNER de la agencia de viajes.
+
+        Se puede usar en cualquier página del dominio con:
+
+            <viajes:banner/>
+
+        declarando previamente el namespace:
+
+            xmlns:viajes="http://xmlns.jcp.org/jsf/composite/components"
+    -->
+    <cc:interface>
+        <cc:attribute name="titulo"
+                      default="Tu próximo destino empieza aquí"
+                      description="Título principal que se muestra sobre el banner."/>
+        <cc:attribute name="subtitulo"
+                      default="Vuelos, hoteles y experiencias inolvidables al mejor precio."
+                      description="Texto secundario que se muestra sobre el banner."/>
+    </cc:interface>
+
+    <cc:implementation>
+        <header class="agencia-banner"
+                style="background-image: linear-gradient(115deg, rgba(4, 47, 46, 0.82) 0%, rgba(4, 47, 46, 0.45) 48%, rgba(15, 23, 42, 0.28) 100%), url('#{resource['images/banner.svg']}');">
+            <div class="agencia-banner-superposicion">
+
+                <!-- Barra superior: logo + área de clientes -->
+                <div class="agencia-banner-barra">
+
+                    <h:link outcome="/dashboard" styleClass="agencia-marca">
+                        <h:graphicImage name="images/logo.svg"
+                                        styleClass="agencia-logo"
+                                        alt="Logo de la agencia de viajes"/>
+                        <span class="agencia-marca-texto">
+                            <span class="agencia-marca-nombre">Horizonte</span>
+                            <span class="agencia-marca-lema">Agencia de Viajes</span>
+                        </span>
+                    </h:link>
+
+                    <nav class="agencia-cliente" aria-label="Área de clientes">
+                        <h:link outcome="/login"
+                                value="Iniciar Sesión"
+                                styleClass="agencia-enlace-cliente"/>
+                        <h:link outcome="/registro"
+                                value="Crear cuenta"
+                                styleClass="agencia-boton-cliente"/>
+                    </nav>
+
+                </div>
+
+                <!-- Texto del banner -->
+                <div class="agencia-banner-texto">
+                    <h1>#{cc.attrs.titulo}</h1>
+                    <p>#{cc.attrs.subtitulo}</p>
+                </div>
+
+            </div>
+        </header>
+    </cc:implementation>
+
+</ui:composition>

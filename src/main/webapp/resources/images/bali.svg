@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+    <defs>
+        <linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#7c3aed"/>
+            <stop offset="50%" stop-color="#fb7185"/>
+            <stop offset="100%" stop-color="#fbbf24"/>
+        </linearGradient>
+        <linearGradient id="mar" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0e7490"/>
+            <stop offset="100%" stop-color="#083344"/>
+        </linearGradient>
+    </defs>
+
+    <rect width="600" height="400" fill="url(#cielo)"/>
+    <circle cx="430" cy="132" r="54" fill="#fff7ed" opacity="0.9"/>
+
+    <rect x="0" y="300" width="600" height="100" fill="url(#mar)"/>
+
+    <path d="M0 340 q120 -26 240 -6 t360 4 v62 H0 Z" fill="#134e4a"/>
+
+    <g fill="#0f172a">
+        <rect x="150" y="240" width="40" height="100"/>
+        <rect x="158" y="218" width="24" height="24"/>
+        <rect x="164" y="200" width="12" height="20"/>
+        <rect x="240" y="240" width="40" height="100"/>
+        <rect x="248" y="218" width="24" height="24"/>
+        <rect x="254" y="200" width="12" height="20"/>
+    </g>
+
+    <g>
+        <path d="M420 334 q16 -80 48 -120" stroke="#4a3424" stroke-width="9" fill="none" stroke-linecap="round"/>
+        <path d="M470 336 q2 -66 26 -96" stroke="#4a3424" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <g fill="#166534">
+            <ellipse cx="468" cy="204" rx="46" ry="12" transform="rotate(-28 468 204)"/>
+            <ellipse cx="468" cy="204" rx="46" ry="12" transform="rotate(28 468 204)"/>
+            <ellipse cx="468" cy="212" rx="40" ry="11" transform="rotate(82 468 212)"/>
+            <ellipse cx="500" cy="232" rx="36" ry="10" transform="rotate(-20 500 232)"/>
+            <ellipse cx="500" cy="232" rx="36" ry="10" transform="rotate(40 500 232)"/>
+        </g>
+    </g>
+
+    <g stroke="#67e8f9" stroke-width="3" opacity="0.3" fill="none" stroke-linecap="round">
+        <path d="M60 370 q40 -10 80 0"/>
+        <path d="M240 386 q40 -10 80 0"/>
+        <path d="M420 372 q40 -10 80 0"/>
+    </g>
+</svg>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="primefaces"
+      xmlns:pt="jakarta.faces.passthrough">
+<h:head>
+    <title>MorfeoTrip - Historial de vuelos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+    <style>
+        :root { --morado-morfeotrip: #64258b; }
+        body { background-color: #fff; }
+        .texto-morado { color: var(--morado-morfeotrip) !important; }
+        .tarjeta-vuelo { transition: transform .3s ease, box-shadow .3s ease; }
+        .tarjeta-vuelo:hover { transform: translateY(-5px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important; }
+        .img-vuelo { height: 250px; object-fit: cover; }
+        .navbar-cristal { background: rgba(255,255,255,.82); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(0,0,0,.06); }
+        .brand-mark { color: #64258b; }
+        .nav-link.active, .nav-link:hover { color: #64258b !important; }
+        .btn-morado { background: #64258b; border-color: #64258b; color: #fff; }
+        .btn-morado:hover { background: #501d70; border-color: #501d70; color: #fff; }
+        .filter-pill { background: #fff !important; border: 1px solid #d8c5e4 !important; color: #64258b !important; box-shadow: none !important; }
+        .filter-pill:hover, .filter-pill.active { background: #64258b !important; border-color: #64258b !important; color: #fff !important; }
+        .detalle-vuelo-dialog, .detalle-vuelo-dialog * { cursor: default !important; user-select: none; }
+    </style>
+</h:head>
+<h:body>
+    <nav class="navbar navbar-expand-lg navbar-cristal sticky-top py-2 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-dark" href="index.xhtml">
+
+
+                <!-- esto es el logo morfeo -->
+                <i class="bi bi-compass-fill brand-mark me-2"></i>MorfeoTrip</a>
+
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Abrir menú">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+                    <li class="nav-item"><a class="nav-link" href="index.xhtml">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link active fw-semibold" aria-current="page" href="historialVuelos.xhtml">Historial de vuelos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="paquetes.xhtml">Paquetes de viaje</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-5 mb-5">
+        <header class="text-center mb-5">
+            <h1 class="display-5 fw-bold text-dark">Historial de vuelos</h1>
+            <p class="text-secondary fs-5 texto-morado">Tus lugares en el mundo. Todos aquí.</p>
+        </header>
+
+        <h:form id="historialForm">
+            <p:growl id="mensajes" showDetail="true" life="4000" />
+            <section class="row justify-content-center mb-4">
+                <div class="col-12 col-md-8 col-lg-6">
+                    <div class="input-group input-group-lg shadow-sm rounded-4 overflow-hidden">
+                        <span class="input-group-text bg-white border-0 text-secondary"><i class="bi bi-search"></i></span>
+                        <p:inputText id="busqueda" value="#{historialVuelosBean.busqueda}" styleClass="form-control border-0"
+                                     placeholder="Busca un país o ciudad..." pt:autocomplete="off">
+                            <p:ajax event="keyup" update="resultados" />
+                        </p:inputText>
+                    </div>
+                </div>
+            </section>
+
+            <section class="d-flex justify-content-center flex-wrap gap-2 mb-5" aria-label="Filtrar por continente">
+                <ui:repeat value="#{['todos','asia','europa','norteamerica','sudamerica','oceania','africa']}" var="region">
+                    <p:commandButton value="#{region eq 'todos' ? 'Todos' : region eq 'norteamerica' ? 'Norteamérica' : region eq 'sudamerica' ? 'Sudamérica' : region eq 'europa' ? 'Europa' : region eq 'asia' ? 'Asia' : region eq 'oceania' ? 'Oceanía' : 'África'}"
+                                     action="#{historialVuelosBean.seleccionarContinente(region)}" process="@this" update=":historialForm:resultados"
+                                     styleClass="btn btn-sm rounded-pill filter-pill #{historialVuelosBean.continente eq region ? 'active' : ''}" />
+                </ui:repeat>
+            </section>
+
+            <section class="row justify-content-center align-items-end g-3 mb-4" aria-label="Filtros avanzados">
+                <div class="col-12 col-sm-6 col-lg-2">
+                    <h:outputLabel for="fechaDesde" value="Desde" styleClass="form-label small text-secondary mb-1" />
+                    <h:inputText id="fechaDesde" value="#{historialVuelosBean.fechaDesde}" pt:type="date" styleClass="form-control">
+                        <f:ajax event="change" render="resultados" />
+                    </h:inputText>
+                </div>
+                <div class="col-12 col-sm-6 col-lg-2">
+                    <h:outputLabel for="fechaHasta" value="Hasta" styleClass="form-label small text-secondary mb-1" />
+                    <h:inputText id="fechaHasta" value="#{historialVuelosBean.fechaHasta}" pt:type="date" styleClass="form-control">
+                        <f:ajax event="change" render="resultados" />
+                    </h:inputText>
+                </div>
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <h:outputLabel for="estado" value="Estado del vuelo" styleClass="form-label small text-secondary mb-1" />
+                    <h:selectOneMenu id="estado" value="#{historialVuelosBean.estado}" styleClass="form-select">
+                        <f:selectItem itemValue="todos" itemLabel="Todos los estados" />
+                        <f:selectItem itemValue="pendiente" itemLabel="Pendiente" />
+                        <f:selectItem itemValue="confirmado" itemLabel="Confirmado" />
+                        <f:selectItem itemValue="completado" itemLabel="Completado" />
+                        <f:selectItem itemValue="cancelado" itemLabel="Cancelado" />
+                        <f:ajax event="change" render="resultados" />
+                    </h:selectOneMenu>
+                </div>
+                <div class="col-12 col-sm-6 col-lg-2">
+                    <p:commandButton value="Limpiar filtros" action="#{historialVuelosBean.limpiarFiltros}"
+                                     process="@this" update="@form" styleClass="ui-button-outlined ui-button-secondary w-100" />
+                </div>
+            </section>
+
+            <h:panelGroup id="resultados" layout="block">
+                <p class="text-center text-secondary mb-3" aria-live="polite">
+                    Mostrando #{historialVuelosBean.totalFiltrados} de #{historialVuelosBean.totalVuelos} vuelos de ejemplo.
+                </p>
+                <div class="row g-4">
+                    <ui:repeat value="#{historialVuelosBean.vuelosFiltrados}" var="vuelo">
+                        <article class="col-12 col-md-6 col-lg-4">
+                            <div class="card h-100 border-0 shadow-sm rounded-4 tarjeta-vuelo">
+                                <h:graphicImage value="#{vuelo.imagen}" alt="Destino: #{vuelo.ciudad}" styleClass="card-img-top img-vuelo rounded-top-4" />
+                                <div class="card-body">
+                                    <h2 class="h5 card-title fw-bold">#{vuelo.origen} → #{vuelo.destino}</h2>
+                                    <span class="badge rounded-pill #{vuelo.estado eq 'confirmado' ? 'text-bg-success' : vuelo.estado eq 'pendiente' ? 'text-bg-warning' : vuelo.estado eq 'cancelado' ? 'text-bg-danger' : 'text-bg-secondary'}">#{vuelo.estado}</span>
+                                    <p class="text-secondary mb-1 mt-2">Salida: #{historialVuelosBean.formatearFecha(vuelo.fecha)}</p>
+                                    <p class="text-secondary mb-1">Aerolínea: #{vuelo.aerolinea}</p>
+                                    <p class="text-secondary">Precio: #{vuelo.precio} €</p>
+                                    <p:commandButton value="Ver detalles" action="#{historialVuelosBean.mostrarDetalles(vuelo)}"
+                                                     update=":historialForm:detalle" oncomplete="PF('detalleVuelo').show()"
+                                                     styleClass="ui-button-outlined ui-button-primary ui-button-sm rounded-pill me-2" />
+                                    <p:commandButton value="Descargar" action="#{historialVuelosBean.descargar(vuelo)}" ajax="false"
+                                                     styleClass="ui-button-outlined ui-button-secondary ui-button-sm rounded-pill me-2" />
+                    <p:commandButton value="Cancelar" action="#{historialVuelosBean.cancelar(vuelo)}" update=":historialForm:resultados :historialForm:mensajes"
+                                                     rendered="#{vuelo.estado eq 'pendiente' or vuelo.estado eq 'confirmado'}"
+                                                     styleClass="ui-button-outlined ui-button-danger ui-button-sm rounded-pill" />
+                                </div>
+                            </div>
+                        </article>
+                    </ui:repeat>
+                </div>
+                <h:panelGroup rendered="#{historialVuelosBean.historialVacio}" layout="block" styleClass="text-center mt-5">
+                    <i class="bi bi-airplane fs-1 text-secondary mb-3"></i>
+                    <h2 class="h4 text-dark">Tu historial está vacío</h2>
+                </h:panelGroup>
+                <h:panelGroup rendered="#{not historialVuelosBean.historialVacio and historialVuelosBean.totalFiltrados eq 0}" layout="block" styleClass="text-center mt-5">
+                    <i class="bi bi-search fs-1 text-secondary mb-3"></i>
+                    <h2 class="h4 text-dark">No se encontraron vuelos</h2>
+                    <p class="text-secondary">Prueba con otra búsqueda.</p>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <p:dialog id="detalle" widgetVar="detalleVuelo" header="Detalles del vuelo" modal="true" responsive="true" draggable="false" resizable="false" styleClass="rounded-4 detalle-vuelo-dialog">
+                <h:panelGroup rendered="#{not empty historialVuelosBean.vueloSeleccionado}" layout="block">
+                    <dl class="mb-0">
+                        <dt>Ruta</dt><dd>#{historialVuelosBean.vueloSeleccionado.origen} → #{historialVuelosBean.vueloSeleccionado.destino}</dd>
+                        <dt>Destino</dt><dd>#{historialVuelosBean.vueloSeleccionado.ciudad}, #{historialVuelosBean.vueloSeleccionado.pais}</dd>
+                        <dt>Fecha</dt><dd>#{historialVuelosBean.formatearFecha(historialVuelosBean.vueloSeleccionado.fecha)}</dd>
+                        <dt>Aerolínea</dt><dd>#{historialVuelosBean.vueloSeleccionado.aerolinea}</dd>
+                        <dt>Estado</dt><dd>#{historialVuelosBean.vueloSeleccionado.estado}</dd>
+                        <dt>Precio</dt><dd>#{historialVuelosBean.vueloSeleccionado.precio} €</dd>
+                    </dl>
+                </h:panelGroup>
+            </p:dialog>
+        </h:form>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</h:body>
+</html>

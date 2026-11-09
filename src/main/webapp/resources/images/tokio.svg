@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+    <defs>
+        <linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#38bdf8"/>
+            <stop offset="70%" stop-color="#bae6fd"/>
+            <stop offset="100%" stop-color="#fef3c7"/>
+        </linearGradient>
+    </defs>
+
+    <rect width="600" height="400" fill="url(#cielo)"/>
+    <circle cx="468" cy="108" r="46" fill="#fb7185" opacity="0.9"/>
+
+    <g fill="#ffffff" opacity="0.55">
+        <ellipse cx="120" cy="92" rx="58" ry="15"/>
+        <ellipse cx="172" cy="80" rx="36" ry="11"/>
+        <ellipse cx="390" cy="170" rx="46" ry="12"/>
+    </g>
+
+    <path d="M40 320 L300 118 L560 320 Z" fill="#1e293b"/>
+    <path d="M300 118 L352 160 L334 154 L318 168 L300 152 L282 168 L266 154 L248 160 Z" fill="#f8fafc"/>
+
+    <rect x="0" y="320" width="600" height="80" fill="#0f172a"/>
+
+    <g fill="#dc2626">
+        <rect x="92" y="226" width="15" height="112" rx="3"/>
+        <rect x="196" y="226" width="15" height="112" rx="3"/>
+        <path d="M74 222 q77 -20 154 0 l0 16 q-77 -16 -154 0 Z"/>
+        <rect x="92" y="258" width="119" height="13" rx="3"/>
+    </g>
+
+    <circle cx="150" cy="205" r="6" fill="#fbbf24" opacity="0.85"/>
+</svg>

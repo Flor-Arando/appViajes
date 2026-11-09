@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+    <defs>
+        <linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0ea5e9"/>
+            <stop offset="100%" stop-color="#e0f2fe"/>
+        </linearGradient>
+        <linearGradient id="mar" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#22d3ee"/>
+            <stop offset="55%" stop-color="#0891b2"/>
+            <stop offset="100%" stop-color="#0e7490"/>
+        </linearGradient>
+    </defs>
+
+    <rect width="600" height="400" fill="url(#cielo)"/>
+    <circle cx="118" cy="96" r="42" fill="#fff7ed" opacity="0.9"/>
+
+    <g fill="#ffffff" opacity="0.55">
+        <ellipse cx="300" cy="84" rx="52" ry="13"/>
+        <ellipse cx="348" cy="76" rx="32" ry="10"/>
+        <ellipse cx="470" cy="150" rx="46" ry="12"/>
+    </g>
+
+    <rect x="0" y="230" width="600" height="170" fill="url(#mar)"/>
+
+    <path d="M0 320 q90 -22 180 -4 t180 -2 t240 8 v78 H0 Z" fill="#fde68a" opacity="0.9"/>
+    <path d="M0 344 q90 -18 180 -2 t180 0 t240 6 v52 H0 Z" fill="#fef3c7" opacity="0.85"/>
+
+    <g>
+        <rect x="330" y="262" width="140" height="58" rx="4" fill="#b45309"/>
+        <path d="M312 264 L400 202 L488 264 Z" fill="#a16207"/>
+        <path d="M312 264 L400 202 L488 264" fill="none" stroke="#78350f" stroke-width="5"/>
+        <rect x="360" y="282" width="26" height="38" fill="#78350f"/>
+        <rect x="414" y="282" width="26" height="22" fill="#fbbf24"/>
+        <g fill="#78350f">
+            <rect x="344" y="320" width="7" height="28"/>
+            <rect x="386" y="320" width="7" height="28"/>
+            <rect x="438" y="320" width="7" height="28"/>
+            <rect x="462" y="320" width="7" height="28"/>
+        </g>
+    </g>
+
+    <g>
+        <path d="M96 336 q18 -84 54 -118" stroke="#4a3424" stroke-width="9" fill="none" stroke-linecap="round"/>
+        <g fill="#15803d">
+            <ellipse cx="152" cy="212" rx="46" ry="12" transform="rotate(-30 152 212)"/>
+            <ellipse cx="152" cy="212" rx="46" ry="12" transform="rotate(30 152 212)"/>
+            <ellipse cx="152" cy="220" rx="40" ry="11" transform="rotate(84 152 220)"/>
+        </g>
+    </g>
+
+    <g stroke="#e0f2fe" stroke-width="3" opacity="0.55" fill="none" stroke-linecap="round">
+        <path d="M60 370 q40 -9 80 0"/>
+        <path d="M240 382 q40 -9 80 0"/>
+        <path d="M470 366 q40 -9 80 0"/>
+    </g>
+</svg>

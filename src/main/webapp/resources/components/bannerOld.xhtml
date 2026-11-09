@@ -1,0 +1,75 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:cc="jakarta.faces.composite"
+    xmlns:h="jakarta.faces.html"
+    xmlns:ui="jakarta.faces.facelets">
+
+    <!--
+        Componente compuesto reutilizable: BANNER de la agencia de viajes.
+
+        Se puede usar en cualquier página del dominio con:
+
+            <viajes:banner/>
+
+        declarando previamente el namespace:
+
+            xmlns:viajes="http://xmlns.jcp.org/jsf/composite/components"
+    -->
+    <cc:interface>
+        <cc:attribute name="titulo"
+                      default="Tu próximo destino empieza aquí"
+                      description="Título principal que se muestra sobre el banner."/>
+        <cc:attribute name="subtitulo"
+                      default="Vuelos, hoteles y experiencias inolvidables al mejor precio."
+                      description="Texto secundario que se muestra sobre el banner."/>
+    </cc:interface>
+
+    <cc:implementation>
+        <header class="position-relative overflow-hidden bg-dark text-white">
+
+            <!-- Imagen de fondo del banner -->
+            <h:graphicImage name="images/banner.svg"
+                            alt=""
+                            styleClass="position-absolute top-0 start-0 w-100 h-100 object-fit-cover opacity-50"/>
+
+            <!-- Contenido sobre la imagen -->
+            <div class="position-relative container px-3 px-md-4 py-4">
+
+                <!-- Barra superior: logo + área de clientes -->
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+
+                    <h:link outcome="/dashboard"
+                            styleClass="d-flex align-items-center gap-2 text-white text-decoration-none">
+                        <h:graphicImage name="images/logo.svg"
+                                        width="56"
+                                        height="56"
+                                        styleClass="rounded-4 shadow"
+                                        alt="Logo de la agencia de viajes"/>
+                        <span class="d-flex flex-column lh-1">
+                            <span class="fs-4 fw-bold">Horizonte</span>
+                            <span class="small text-uppercase text-white-50">Agencia de Viajes</span>
+                        </span>
+                    </h:link>
+
+                    <nav class="d-flex flex-wrap align-items-center gap-2" aria-label="Área de clientes">
+                        <h:link outcome="/login"
+                                value="Iniciar Sesión"
+                                styleClass="btn btn-outline-light btn-sm px-3"/>
+                        <h:link outcome="/registro"
+                                value="Crear cuenta"
+                                styleClass="btn btn-warning btn-sm px-3 fw-semibold"/>
+                    </nav>
+
+                </div>
+
+                <!-- Texto del banner -->
+                <div class="mt-4 mt-md-5 pb-2">
+                    <h1 class="display-5 fw-bold">#{cc.attrs.titulo}</h1>
+                    <p class="fs-5 text-white-50 mb-0">#{cc.attrs.subtitulo}</p>
+                </div>
+
+            </div>
+        </header>
+    </cc:implementation>
+
+</ui:composition>
