@@ -47,7 +47,7 @@ public class DetallePaqueteBean {
                 "https://images.unsplash.com/photo-1525874684015-58379d421a52?auto=format&fit=crop&w=1400&q=85",
                 "https://images.unsplash.com/photo-1791639307440-2879519ec0a3?auto=format&fit=crop&w=1400&q=85"
             });
-            detalle.setHotel("Hotel 4★ en una zona céntrica y bien comunicada");
+            detalle.setHotel("Hotel 4 estrellas en una zona céntrica y bien comunicada");
             detalle.setIncluidos(new String[] {"Vuelos de ida y vuelta", "3 noches en hotel 4★", "Visita guiada al Coliseo con entrada sin colas"});
             detalle.setItinerario(new String[] {
                 "Día 1 · Llegada y primer paseo: traslado al hotel y recorrido tranquilo por Piazza Navona, el Panteón y Campo de' Fiori.",
