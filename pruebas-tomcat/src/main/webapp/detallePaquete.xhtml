@@ -1,0 +1,123 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:fotos="jakarta.faces.composite/components"
+    template="/WEB-INF/templates/templateAgencia.xhtml">
+
+    <ui:define name="title">Detalle del viaje | Horizonte</ui:define>
+    <ui:define name="bannerTitulo">Tu viaje, al detalle</ui:define>
+    <ui:define name="bannerSubtitulo">Revisa lo que incluye el paquete que has elegido.</ui:define>
+
+
+
+
+    <ui:define name="content">
+        <h:outputStylesheet name="css/detalle-paquete.css" target="head"/>
+        <h:panelGroup rendered="#{not empty detallePaqueteBean.detalle.paquete}" layout="block">
+            <article class="detalle-viaje detalle-hero card shadow-sm mb-4">
+                <div class="row g-0">
+                    <div class="col-lg-6">
+
+                        <h:graphicImage value="#{detallePaqueteBean.detalle.imagen}"
+                                        alt="#{detallePaqueteBean.detalle.paquete.titulo} — #{detallePaqueteBean.detalle.paquete.destino}"
+                                        styleClass="detalle-foto"/>
+                    </div>
+
+
+
+
+                    <div class="col-lg-6">
+                        <div class="card-body p-4 p-xl-5">
+                            <p class="detalle-destino text-uppercase fw-bold small mb-2">
+                                <i class="pi pi-map-marker me-1"></i>
+                                <h:outputText value="#{detallePaqueteBean.detalle.paquete.destino}"/>
+                            </p>
+                            <h1 class="display-6 fw-bold mb-3"><h:outputText value="#{detallePaqueteBean.detalle.paquete.titulo}"/></h1>
+                            <p class="text-secondary fs-6 mb-4"><h:outputText value="#{detallePaqueteBean.detalle.paquete.descripcion}"/></p>
+
+                            <div class="detalle-datos mb-4">
+                                <div class="detalle-dato">
+                                    <span class="small text-secondary d-block mb-1">Duración</span>
+                                    <strong><i class="pi pi-clock me-2"></i><h:outputText value="#{detallePaqueteBean.detalle.paquete.duracion}"/></strong>
+                                </div>
+                                <div class="detalle-dato">
+                                    <span class="small text-secondary d-block mb-1">Valoración de viajeros</span>
+                                    <strong><i class="pi pi-star-fill me-2"></i><h:outputText value="#{detallePaqueteBean.detalle.paquete.valoracionTexto}"/> / 5</strong>
+                                </div>
+                            </div>
+
+                            <h2 class="h6 text-uppercase fw-bold text-secondary mb-2">Alojamiento previsto</h2>
+                            <div class="detalle-hotel mb-4">
+                                <i class="pi pi-building text-success me-2"></i>
+                                <strong><h:outputText value="#{detallePaqueteBean.detalle.hotel}"/></strong>
+                            </div>
+
+                            <h2 class="h6 text-uppercase fw-bold text-secondary mb-2">Incluido en el paquete</h2>
+                            <ul class="list-unstyled mb-4">
+                                <ui:repeat value="#{detallePaqueteBean.detalle.incluidos}" var="incluido">
+                                    <li class="detalle-incluido"><i class="pi pi-check-circle"></i><span><h:outputText value="#{incluido}"/></span></li>
+                                </ui:repeat>
+                            </ul>
+
+                            <div class="detalle-precio d-flex flex-wrap justify-content-between align-items-center gap-3">
+                                <div>
+                                    <span class="small text-secondary d-block">Precio por persona desde</span>
+                                    <strong class="fs-2 text-success"><h:outputText value="#{detallePaqueteBean.detalle.paquete.precioFormateado}"/></strong>
+                                </div>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <button type="button" class="btn btn-success rounded-pill px-4">Comprar paquete</button>
+                                    <h:link outcome="/dashboard" value="Volver al inicio" styleClass="btn btn-success rounded-pill px-4"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <section class="mt-4">
+                <fotos:carruselFotos fotos="#{detallePaqueteBean.detalle.fotos}"
+                                       titulo="Lugares que visitarás"
+                                       descripcion="Una selección de rincones que forman parte de tu viaje."
+                                       alt="Lugar incluido en #{detallePaqueteBean.detalle.paquete.destino}"/>
+            </section>
+
+            
+            <section class="detalle-itinerario card shadow-sm mt-4">
+                <div class="card-body p-4 p-xl-5">
+                    <p class="detalle-destino text-uppercase fw-bold small mb-2">El viaje, paso a paso</p>
+                    <h2 class="h3 fw-bold mb-2">Tu itinerario en &#160;<h:outputText value="#{detallePaqueteBean.detalle.paquete.destino}"/></h2>
+                    <p class="text-secondary mb-4">Una propuesta para aprovechar cada día sin perder tiempo en traslados.</p>
+
+
+
+
+
+                    <ol class="detalle-etapas">
+                        <ui:repeat value="#{detallePaqueteBean.detalle.itinerario}" var="etapa">
+                            <li class="detalle-etapa">
+                                <span class="detalle-etapa-icono"><i class="pi pi-map-marker"></i></span>
+                                <div class="detalle-etapa-texto"><h:outputText value="#{etapa}"/></div>
+                            </li>
+                        </ui:repeat>
+                    </ol>
+
+
+
+
+
+                    <div class="detalle-aviso mt-4">
+                        <i class="pi pi-info-circle"></i>
+                        <div><strong>Propuesta de viaje, aún sin reservar</strong><br/>El itinerario es orientativo; la disponibilidad y el precio final deben confirmarse antes de reservar.</div>
+                    </div>
+                </div>
+            </section>
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{empty detallePaqueteBean.detalle.paquete}" layout="block" styleClass="card border-0 shadow-sm rounded-4 text-center p-5">
+            <h1 class="h3">No hay ningún paquete seleccionado</h1>
+            <p class="text-secondary">Vuelve al inicio y pulsa Reservar en una oferta.</p>
+            <h:link outcome="/dashboard" value="Ir al inicio" styleClass="btn btn-success rounded-pill px-4 align-self-center"/>
+        </h:panelGroup>
+    </ui:define>
+</ui:composition>

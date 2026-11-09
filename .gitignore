@@ -34,3 +34,6 @@ public/
 # Build
 target/
 backup/
+
+# Repositorio independiente dentro del proyecto Tomcat; mantenerlo fuera del repositorio principal.
+/pruebas-tomcat/appViajes/

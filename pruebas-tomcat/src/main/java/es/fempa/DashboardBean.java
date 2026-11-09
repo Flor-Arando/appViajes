@@ -171,15 +171,13 @@ public class DashboardBean implements Serializable {
     /**
      * Acción provisional del botón "Reservar" de cada tarjeta.
      */
-    public void reservar(PaqueteViaje paquete) {
+    public String reservar(PaqueteViaje paquete) {
         if (paquete == null) {
-            return;
+            return null;
         }
-        anadirMensaje(FacesMessage.SEVERITY_INFO,
-                "Reserva",
-                "Has seleccionado \"" + paquete.getTitulo() + "\" por "
-                        + paquete.getPrecioFormateado()
-                        + ". La reserva online estará disponible próximamente.");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap()
+                .put("paqueteSeleccionado", paquete);
+        return "/detallePaquete.xhtml?faces-redirect=true";
     }
 
     private void anadirMensaje(FacesMessage.Severity severidad, String titulo, String detalle) {

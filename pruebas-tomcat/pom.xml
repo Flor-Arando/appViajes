@@ -23,6 +23,7 @@
         <jakarta.faces.version>4.1.4</jakarta.faces.version>
         <primefaces.version>15.0.9</primefaces.version>
         <weld.version>6.0.3.Final</weld.version>
+        <tomcat.webapps>C:/Program Files/Apache Software Foundation/Tomcat 11.0/webapps</tomcat.webapps>
     </properties>
 
     <!-- =========================================================
@@ -144,7 +145,7 @@
                                     <target>
                                         <copy
                                             file="${project.build.directory}/${project.build.finalName}.war"
-                                            todir="C:\apache-tomcat-11.0.27\webapps"
+                                            todir="${tomcat.webapps}"
                                             overwrite="true"
                                         />
                                     </target>
