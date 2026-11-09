@@ -5,7 +5,10 @@ import es.fempa.modelo.PaqueteViaje;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.faces.view.ViewScoped;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Inject;
+import java.util.stream.Collectors;
+import java.time.temporal.ChronoUnit;
 import jakarta.inject.Named;
 import org.primefaces.model.ResponsiveOption;
 
@@ -23,7 +26,7 @@ import java.util.Locale;
  * y atiende las acciones de búsqueda y reserva (de momento simuladas).
  */
 @Named("dashboardBean")
-@ViewScoped
+@SessionScoped
 public class DashboardBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -38,6 +41,12 @@ public class DashboardBean implements Serializable {
     private List<PaqueteViaje> ofertas;
     private List<PaqueteViaje> topDestinos;
     private List<ResponsiveOption> opcionesResponsive;
+
+    @Inject
+    private PaquetesBean paquetesBean;
+    private List<PaquetesBean.Paquete> paquetesEncontrados = new ArrayList<>();
+
+    private List<String> paisesSeleccionados = new ArrayList<>();
 
     @PostConstruct
     public void init() {
@@ -145,27 +154,78 @@ public class DashboardBean implements Serializable {
      * El buscador todavía no está conectado a ningún servicio:
      * únicamente devuelve un mensaje informativo al usuario.
      */
-    public void buscar() {
-        StringBuilder mensaje = new StringBuilder("El buscador estará disponible próximamente.");
+    public String buscar() {
 
-        if (ciudadSeleccionada != null) {
-            mensaje.append(" Destino seleccionado: ").append(ciudadSeleccionada.getNombre()).append('.');
-        }
-        if (rangoFechas != null && !rangoFechas.isEmpty()) {
-            if (rangoFechas.size() >= 2 && rangoFechas.get(1) != null) {
-                mensaje.append(" Fechas: ")
-                        .append(rangoFechas.get(0).format(FORMATO_FECHA))
-                        .append(" - ")
-                        .append(rangoFechas.get(1).format(FORMATO_FECHA))
-                        .append('.');
-            } else if (rangoFechas.get(0) != null) {
-                mensaje.append(" Fecha de salida: ")
-                        .append(rangoFechas.get(0).format(FORMATO_FECHA))
-                        .append('.');
-            }
+        // Comprobar que se ha seleccionado al menos un país.
+        if (paisesSeleccionados == null || paisesSeleccionados.isEmpty()) {
+
+            anadirMensaje(
+                    FacesMessage.SEVERITY_WARN,
+                    "Búsqueda incompleta",
+                    "Selecciona al menos un país de destino."
+            );
+
+            return null;
         }
 
-        anadirMensaje(FacesMessage.SEVERITY_INFO, "Buscador", mensaje.toString());
+        // Comprobar las fechas.
+        if (rangoFechas == null
+                || rangoFechas.size() < 2
+                || rangoFechas.get(0) == null
+                || rangoFechas.get(1) == null) {
+
+            anadirMensaje(
+                    FacesMessage.SEVERITY_WARN,
+                    "Búsqueda incompleta",
+                    "Selecciona una fecha de salida y una fecha de regreso."
+            );
+
+            return null;
+        }
+
+        LocalDate fechaSalida = rangoFechas.get(0);
+        LocalDate fechaRegreso = rangoFechas.get(1);
+
+        // Comprobar que el rango de fechas sea válido.
+        if (fechaRegreso.isBefore(fechaSalida)
+                || fechaRegreso.isEqual(fechaSalida)) {
+
+            anadirMensaje(
+                    FacesMessage.SEVERITY_WARN,
+                    "Fechas incorrectas",
+                    "La fecha de regreso debe ser posterior a la fecha de salida."
+            );
+
+            return null;
+        }
+
+        // Calcular la duración disponible.
+        long diasDisponibles = ChronoUnit.DAYS.between(
+                fechaSalida,
+                fechaRegreso
+        );
+
+        // Obtener los paquetes que coinciden con la búsqueda.
+        paquetesEncontrados = paquetesBean.getTodosLosPaquetes()
+                .stream()
+
+                // Filtrar por los países seleccionados.
+                .filter(paquete ->
+                        paisesSeleccionados.stream()
+                                .anyMatch(pais ->
+                                        pais.equalsIgnoreCase(paquete.getPais())
+                                )
+                )
+
+                // Filtrar por duración.
+                .filter(paquete ->
+                        paquete.getDuracion() <= diasDisponibles
+                )
+
+                .collect(Collectors.toList());
+
+        // Ir a la página de resultados.
+        return "busqueda?faces-redirect=true";
     }
 
     /**
@@ -216,5 +276,66 @@ public class DashboardBean implements Serializable {
 
     public List<ResponsiveOption> getOpcionesResponsive() {
         return opcionesResponsive;
+    }
+
+    public List<PaquetesBean.Paquete> getPaquetesEncontrados() {
+        return paquetesEncontrados;
+    }
+
+    public String getFechaSalidaFormateada() {
+
+        if (rangoFechas == null
+                || rangoFechas.isEmpty()
+                || rangoFechas.get(0) == null) {
+            return "";
+        }
+
+        return rangoFechas.get(0).format(FORMATO_FECHA);
+    }
+
+    public String getFechaVueltaFormateada() {
+
+        if (rangoFechas == null
+                || rangoFechas.size() < 2
+                || rangoFechas.get(1) == null) {
+            return "";
+        }
+
+        return rangoFechas.get(1).format(FORMATO_FECHA);
+    }
+
+    public List<String> getPaisesSeleccionados() {
+        return paisesSeleccionados;
+    }
+
+    public void setPaisesSeleccionados(List<String> paisesSeleccionados) {
+        this.paisesSeleccionados = paisesSeleccionados;
+    }
+
+    public List<String> getPaisesDisponibles() {
+        return paquetesBean.getPaisesDisponibles();
+    }
+
+    public String getPaisesSeleccionadosTexto() {
+        if (paisesSeleccionados == null || paisesSeleccionados.isEmpty()) {
+            return "";
+        }
+
+        return String.join(", ", paisesSeleccionados);
+    }
+
+    public void reservar(PaquetesBean.Paquete paquete) {
+
+        if (paquete == null) {
+            return;
+        }
+
+        anadirMensaje(
+                FacesMessage.SEVERITY_INFO,
+                "Reserva",
+                "Has seleccionado \"" + paquete.getNombre()
+                        + "\" por " + paquete.getPrecio()
+                        + ". La reserva online estará disponible próximamente."
+        );
     }
 }

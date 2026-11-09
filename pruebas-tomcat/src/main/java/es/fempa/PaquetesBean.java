@@ -1,6 +1,6 @@
 package es.fempa;
 
-import jakarta.faces.view.ViewScoped;
+import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.Set;
 
 /** Datos y filtro de los paquetes que muestra el carrusel. */
 @Named
-@ViewScoped
+@SessionScoped
 public class PaquetesBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -82,6 +82,10 @@ public class PaquetesBean implements Serializable {
         return categoria;
     }
 
+    public List<Paquete> getTodosLosPaquetes() {
+        return paquetes;
+    }
+
     public static class Paquete implements Serializable {
         private static final long serialVersionUID = 1L;
 
@@ -118,5 +122,13 @@ public class PaquetesBean implements Serializable {
         public String getCategoria() { return categoria; }
         public String getImagen() { return imagen; }
         public String getImagenAlt() { return imagenAlt; }
+    }
+    // Obtiene automáticamente los países disponibles en los paquetes.
+    public List<String> getPaisesDisponibles() {
+        return paquetes.stream()
+                .map(Paquete::getPais)
+                .distinct()
+                .sorted()
+                .toList();
     }
 }

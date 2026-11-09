@@ -42,19 +42,21 @@
 
                         <div class="col-12 col-md-4">
                             <div class="d-flex align-items-center gap-2 px-2">
-                                <i class="pi pi-map-marker text-success fs-5"></i>
-                                <h:selectOneMenu id="ciudad"
-                                                 value="#{dashboardBean.ciudadSeleccionada}"
-                                                 title="¿Dónde?"
-                                                 styleClass="form-select border-0 shadow-none flex-grow-1">
-                                    <f:selectItem itemValue="#{null}"
-                                                  itemLabel="¿Dónde?"
-                                                  noSelectionOption="true"/>
-                                    <f:selectItems value="#{dashboardBean.ciudades}"
-                                                   var="ciudad"
-                                                   itemLabel="#{ciudad.nombre}"
-                                                   itemValue="#{ciudad}"/>
-                                </h:selectOneMenu>
+                                <i class="pi pi-globe text-success fs-5"></i>
+
+                                <p:selectCheckboxMenu id="paises"
+                                                      value="#{dashboardBean.paisesSeleccionados}"
+                                                      label="¿Qué países?"
+                                                      filter="true"
+                                                      filterMatchMode="contains"
+                                                      showHeader="true"
+                                                      styleClass="flex-grow-1">
+
+                                    <f:selectItems value="#{dashboardBean.paisesDisponibles}"
+                                                   var="pais"
+                                                   itemLabel="#{pais}"
+                                                   itemValue="#{pais}"/>
+                                </p:selectCheckboxMenu>
                             </div>
                         </div>
 
