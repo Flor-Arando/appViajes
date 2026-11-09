@@ -49,11 +49,11 @@
                     <!-- Evita repetir el mismo resumen como detalle. -->
                     <p:messages id="messages" showDetail="false" closable="true"/>
                     <div class="mb-3">
-                        <!-- Campo enlazado con registerBean.name. -->
-                        <h:outputLabel for="regNombre" value="Nombre completo" styleClass="form-label"/>
-                        <p:inputText id="regNombre" value="#{registerBean.name}" required="true"
-                                     styleClass="form-control" placeholder="Ana Pérez"
-                                     requiredMessage="Escribe tu nombre."/>
+                        <!-- Este valor será el usuario para iniciar sesión. -->
+                        <h:outputLabel for="regNombre" value="Nombre de usuario" styleClass="form-label"/>
+                        <p:inputText id="regNombre" value="#{registerBean.username}" required="true"
+                                     styleClass="form-control" placeholder="ana123"
+                                     requiredMessage="Escribe tu nombre de usuario."/>
                         <div class="invalid-feedback" id="error-regNombre"></div>
                     </div>
                     <div class="mb-3">

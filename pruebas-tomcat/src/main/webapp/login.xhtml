@@ -56,7 +56,7 @@
                     </div>
                     <!-- Ejecuta loginBean.login y actualiza el formulario sin recargarlo. -->
                     <p:commandButton value="Iniciar sesión" action="#{loginBean.login}"
-                                     update="@form" styleClass="btn btn-primary w-100"/>
+                                     ajax="false" styleClass="btn btn-primary w-100"/>
                 </h:form>
 
                 <p class="text-center text-secondary mt-4 mb-0">

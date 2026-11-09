@@ -6,15 +6,16 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.io.Serializable;
+import java.util.Locale;
 
 @Named
-@ViewScoped // ok - aqui va usuario y password nada mas. 
+@ViewScoped
 public class LoginBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Inject
-    private AuthService authService;
+    private UsuarioBean usuarioBean;
     private String username;
     private String password;
 
@@ -34,20 +35,24 @@ public class LoginBean implements Serializable {
         this.password = password;
     }
 
-    // Valida los datos y muestra el resultado del inicio de sesión.
-    public void login() {
-        String usuario = username == null ? "" : username.trim();
+    // Valida las credenciales y redirige al inicio si son correctas.
+    public String login() {
+        String usuario = username == null ? "" : username.trim().toLowerCase(Locale.ROOT);
         String clave = password == null ? "" : password;
+        FacesContext context = FacesContext.getCurrentInstance();
 
         if (usuario.isEmpty() || clave.isEmpty()) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "El usuario y la contraseña son obligatorios", null));
-            return;
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+                    "El usuario y la contraseña son obligatorios", null));
+            return null;
         }
 
-        if (authService.authenticate(usuario, clave)) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Login exitoso", null));
+        if (usuarioBean.autenticar(usuario, clave)) {
+            return "index?faces-redirect=true";
         } else {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Usuario o contraseña incorrectos", null));
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Usuario o contraseña incorrectos", null));
+            return null;
         }
     }
 }

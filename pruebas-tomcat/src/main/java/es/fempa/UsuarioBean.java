@@ -2,32 +2,77 @@ package es.fempa;
 
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.faces.view.ViewScoped;
+import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.io.Serializable;
 
 @Named
-@SessionScoped // id-sesionIniciada-nombre-
+@SessionScoped
 public class UsuarioBean implements Serializable {
-    // este podria ser una vista para ver el usuario y su nombre, y el mensaje de saludo.
-    // es una lista de usuarios mockeados creados como objetos 
-    
+    private static final long serialVersionUID = 1L;
 
+    private List<Usuario> usuariosRegistrados = new ArrayList<>();
     private String nombre;
     private String mensaje;
     private int value = 50;
-    private String asadorDePollos;
 
-    public String getSaludo(){
+    public UsuarioBean() {
+        usuariosRegistrados.add(new Usuario("Administrador", "admin", "1234"));
+    }
+
+    public String getSaludo() {
         return "HOla soy un saludo estático";
     }
 
-    public String getAsadorDePollos() {
-        return asadorDePollos;
+    public List<Usuario> getUsuariosRegistrados() {
+        return usuariosRegistrados;
     }
 
-    public void setAsadorDePollos(String asadorDePollos) {
-        this.asadorDePollos = asadorDePollos;
+    public boolean existeUsuario(String username) {
+        String normalizedUsername = normalizeUsername(username);
+        if (normalizedUsername.isEmpty()) {
+            return false;
+        }
+
+        for (Usuario usuario : usuariosRegistrados) {
+            if (usuario.getUsername().equalsIgnoreCase(normalizedUsername)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean agregarUsuario(String nombre, String username, String password) {
+        String normalizedUsername = normalizeUsername(username);
+        if (nombre == null || nombre.isBlank() || normalizedUsername.isEmpty()
+                || password == null || password.isEmpty() || existeUsuario(normalizedUsername)) {
+            return false;
+        }
+
+        usuariosRegistrados.add(new Usuario(nombre.trim(), normalizedUsername, password));
+        return true;
+    }
+
+    public boolean autenticar(String username, String password) {
+        String normalizedUsername = normalizeUsername(username);
+        if (normalizedUsername.isEmpty() || password == null || password.isEmpty()) {
+            return false;
+        }
+
+        for (Usuario usuario : usuariosRegistrados) {
+            if (usuario.getUsername().equalsIgnoreCase(normalizedUsername)
+                    && usuario.getPassword().equals(password)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String normalizeUsername(String username) {
+        return username == null ? "" : username.trim().toLowerCase(Locale.ROOT);
     }
 
     public int getValue() {
@@ -52,6 +97,32 @@ public class UsuarioBean implements Serializable {
 
     public String getMensaje() {
         return mensaje;
+    }
+
+    public static class Usuario implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        private String nombre;
+        private String username;
+        private String password;
+
+        public Usuario(String nombre, String username, String password) {
+            this.nombre = nombre;
+            this.username = username;
+            this.password = password;
+        }
+
+        public String getNombre() {
+            return nombre;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public String getPassword() {
+            return password;
+        }
     }
 
     public void onChange() {

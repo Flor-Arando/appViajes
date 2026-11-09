@@ -6,30 +6,32 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.io.Serializable;
+import java.util.Locale;
+import java.util.regex.Pattern;
 
 @Named
 @ViewScoped
 public class RegisterBean implements Serializable {
-    // usuarioBean lo inyectamos aca 
-    // falta comprobar que no exista este usuario creado con los de la lista.
-    // si todo esta ok, se crea el usuario y se agrega a la lista de usuarios mockeados como
-    // getUsuariosRegistrados() y se muestra un mensaje de exito.
     private static final long serialVersionUID = 1L;
+    private static final Pattern EMAIL_PATTERN =
+            Pattern.compile("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
+    private static final Pattern PASSWORD_PATTERN =
+            Pattern.compile("^(?=.*[A-Z])(?=.*\\d).{8,}$");
 
     @Inject
-    private AuthService authService;
+    private UsuarioBean usuarioBean;
 
-    private String name;
+    private String username;
     private String email;
     private String password;
     private String passwordConfirmation;
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getEmail() {
@@ -59,33 +61,55 @@ public class RegisterBean implements Serializable {
     // Valida los datos y registra la cuenta si cumple todas las reglas.
     public void register() {
         FacesContext context = FacesContext.getCurrentInstance();
-        String userName = name == null ? "" : name.trim();
-        String userEmail = email == null ? "" : email.trim().toLowerCase();
+        String userName = username == null ? "" : username.trim();
+        String userEmail = email == null ? "" : email.trim().toLowerCase(Locale.ROOT);
         String userPassword = password == null ? "" : password;
 
-        // Repite en servidor las reglas mostradas por register.js.
-        if (userName.length() < 3 || !userEmail.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$")
-                || userPassword.length() < 8 || !userPassword.matches(".*[A-Z].*")
-                || !userPassword.matches(".*\\d.*")
-                || !userPassword.equals(passwordConfirmation)) {
+        if (userName.isEmpty() || userEmail.isEmpty() || userPassword.isEmpty()) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
-                    "Revisa los datos del formulario", null));
+                    "Completa todos los campos obligatorios", null));
             return;
         }
 
-        if (authService.register(userName, userEmail, userPassword)) {
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
-                    "Cuenta creada. Ya puedes iniciar sesión.", null));
-            clear();
-        } else {
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Ese correo ya está registrado", null));
+        if (!EMAIL_PATTERN.matcher(userEmail).matches()) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+                    "Escribe un correo electrónico válido", null));
+            return;
         }
+
+        if (!PASSWORD_PATTERN.matcher(userPassword).matches()) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+                    "La contraseña debe tener al menos 8 caracteres, una mayúscula y un número",
+                    null));
+            return;
+        }
+
+        if (!userPassword.equals(passwordConfirmation)) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+                    "Las contraseñas no coinciden", null));
+            return;
+        }
+
+        if (usuarioBean.existeUsuario(userName)) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Ese nombre de usuario ya está registrado", null));
+            return;
+        }
+
+        if (!usuarioBean.agregarUsuario(userName, userName, userPassword)) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Ese nombre de usuario ya está registrado", null));
+            return;
+        }
+
+        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+                "Cuenta creada. Ya puedes iniciar sesión.", null));
+        clear();
     }
 
     // Vacía el formulario después de crear una cuenta correctamente.
     private void clear() {
-        name = null;
+        username = null;
         email = null;
         password = null;
         passwordConfirmation = null;
