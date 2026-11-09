@@ -34,15 +34,12 @@
         <div class="card border-0 rounded-4 shadow-lg w-100" style="max-width: 440px">
             <div class="card-body p-4">
 
-                <a href="login.xhtml" class="d-flex align-items-center justify-content-center gap-2 text-dark text-decoration-none mb-3">
-                    <svg width="44" height="44" viewBox="0 0 48 48" aria-hidden="true">
-                        <circle cx="24" cy="24" r="22" fill="none" stroke="#0B3C5D" stroke-width="3"/>
-                        <path d="M24 8 L30 24 L24 40 L18 24 Z" fill="#F2B134"/>
-                        <path d="M24 8 L30 24 L24 24 Z" fill="#0B3C5D"/>
-                        <circle cx="24" cy="24" r="2.5" fill="#0B3C5D"/>
-                    </svg>
+                <h:link outcome="/dashboard" class="d-flex align-items-center justify-content-center gap-2 text-dark text-decoration-none mb-3">
+                    <h:graphicImage name="images/logo.svg"
+                                    width="44" height="44" styleClass="rounded-4 shadow"
+                                    alt="Logo de MorfeoTrip"/>
                     <span class="h1 fw-bold mb-0">MorfeoTrip</span>
-                </a>
+                </h:link>
                 <p class="text-secondary text-center mb-4">Crea tu cuenta en menos de un minuto.</p>
                 <!-- Formulario JSF que envía los datos a RegisterBean. -->
                 <h:form id="formRegistro" prependId="false">
@@ -89,7 +86,7 @@
                     </div>
                     <!-- Ejecuta el registro y actualiza el formulario con el resultado. -->
                     <p:commandButton value="Crear cuenta" action="#{registerBean.register}"
-                                     update="@form" styleClass="btn btn-primary w-100"/>
+                                     update="@form" styleClass="btn bg-success text-white border-0 w-100"/>
                 </h:form>
                 <p class="text-center text-secondary mt-4 mb-0">
                     ¿Ya tienes cuenta?
