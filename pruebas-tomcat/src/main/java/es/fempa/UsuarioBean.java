@@ -17,6 +17,7 @@ public class UsuarioBean implements Serializable {
     private List<Usuario> usuariosRegistrados = new ArrayList<>();
     private String nombre;
     private String mensaje;
+    private String usuarioAutenticado;
     private int value = 50;
 
     public UsuarioBean() {
@@ -45,14 +46,15 @@ public class UsuarioBean implements Serializable {
         return false;
     }
 
-    public boolean agregarUsuario(String nombre, String username, String password) {
+    public boolean agregarUsuario(String nombre, String username, String password, String email) {
         String normalizedUsername = normalizeUsername(username);
         if (nombre == null || nombre.isBlank() || normalizedUsername.isEmpty()
-                || password == null || password.isEmpty() || existeUsuario(normalizedUsername)) {
+                || password == null || password.isEmpty() || email == null || email.isBlank()
+                || existeUsuario(normalizedUsername)) {
             return false;
         }
 
-        usuariosRegistrados.add(new Usuario(nombre.trim(), normalizedUsername, password));
+        usuariosRegistrados.add(new Usuario(nombre.trim(), normalizedUsername, password, email.trim()));
         return true;
     }
 
@@ -65,7 +67,8 @@ public class UsuarioBean implements Serializable {
         for (Usuario usuario : usuariosRegistrados) {
             if (usuario.getUsername().equalsIgnoreCase(normalizedUsername)
                     && usuario.getPassword().equals(password)) {
-                return true;
+                    usuarioAutenticado = usuario.getUsername();
+                    return true;
             }
         }
         return false;
@@ -99,17 +102,46 @@ public class UsuarioBean implements Serializable {
         return mensaje;
     }
 
+    public Usuario getUsuarioAutenticado() {
+        if (usuarioAutenticado == null) {
+            return null;
+        }
+        for (Usuario usuario : usuariosRegistrados) {
+            if (usuario.getUsername().equalsIgnoreCase(usuarioAutenticado)) {
+                return usuario;
+            }
+        }
+        return null;
+    }
+
+    // Elimina la cuenta actual y cierra la sesión.
+    public String eliminarCuenta() {
+        Usuario usuario = getUsuarioAutenticado();
+        if (usuario != null) {
+            usuariosRegistrados.remove(usuario);
+        }
+        usuarioAutenticado = null;
+        FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+        return "/login?faces-redirect=true";
+    }
+
     public static class Usuario implements Serializable {
         private static final long serialVersionUID = 1L;
 
         private String nombre;
         private String username;
         private String password;
+        private String email;
 
         public Usuario(String nombre, String username, String password) {
+            this(nombre, username, password, "");
+        }
+
+        public Usuario(String nombre, String username, String password, String email) {
             this.nombre = nombre;
             this.username = username;
             this.password = password;
+            this.email = email;
         }
 
         public String getNombre() {
@@ -122,6 +154,10 @@ public class UsuarioBean implements Serializable {
 
         public String getPassword() {
             return password;
+        }
+
+        public String getEmail() {
+            return email;
         }
     }
 
