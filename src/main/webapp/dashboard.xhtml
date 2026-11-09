@@ -26,6 +26,7 @@
                             <div class="d-flex align-items-center gap-2 px-2">
                                 <i class="pi pi-calendar text-success fs-5"></i>
                                 <p:datePicker id="fecha"
+                                              widgetVar="wdFecha"
                                               value="#{dashboardBean.rangoFechas}"
                                               selectionMode="range"
                                               placeholder="¿Cuándo? (Salida - Vuelta)"
@@ -34,6 +35,7 @@
                                               showIcon="false"
                                               readonlyInput="true"
                                               showButtonBar="true"
+                                              hideOnRangeSelection="false"
                                               styleClass="flex-grow-1"/>
                             </div>
                         </div>
@@ -228,6 +230,9 @@
             </h:form>
 
         </section>
+
+        <!-- Botón "Aplicar" en la barra del calendario de rango -->
+        <h:outputScript name="js/datepicker-rango.js" target="body"/>
 
     </ui:define>
 

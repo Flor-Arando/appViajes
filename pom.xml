@@ -201,6 +201,7 @@
                                     <includes>
                                         <include>**/*.xhtml</include>
                                         <include>**/*.css</include>
+                                        <include>**/*.js</include>
                                         <include>**/*.svg</include>
                                         <include>**/*.png</include>
                                         <include>**/*.jpg</include>
