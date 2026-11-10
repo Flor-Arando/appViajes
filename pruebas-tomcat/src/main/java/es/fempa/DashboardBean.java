@@ -46,7 +46,7 @@ public class DashboardBean implements Serializable {
     private PaquetesBean paquetesBean;
     private List<PaquetesBean.Paquete> paquetesEncontrados = new ArrayList<>();
 
-    private List<String> paisesSeleccionados = new ArrayList<>();
+    private String paisSeleccionado = "";
 
     @PostConstruct
     public void init() {
@@ -157,7 +157,7 @@ public class DashboardBean implements Serializable {
     public String buscar() {
 
         // Comprobar que se ha seleccionado al menos un país.
-        if (paisesSeleccionados == null || paisesSeleccionados.isEmpty()) {
+        if (paisSeleccionado == null || paisSeleccionado.isBlank()) {
 
             anadirMensaje(
                     FacesMessage.SEVERITY_WARN,
@@ -209,12 +209,9 @@ public class DashboardBean implements Serializable {
         paquetesEncontrados = paquetesBean.getTodosLosPaquetes()
                 .stream()
 
-                // Filtrar por los países seleccionados.
+                // Filtrar por el país seleccionado.
                 .filter(paquete ->
-                        paisesSeleccionados.stream()
-                                .anyMatch(pais ->
-                                        pais.equalsIgnoreCase(paquete.getPais())
-                                )
+                        paisSeleccionado.equalsIgnoreCase(paquete.getPais())
                 )
 
                 // Filtrar por duración.
@@ -304,24 +301,24 @@ public class DashboardBean implements Serializable {
         return rangoFechas.get(1).format(FORMATO_FECHA);
     }
 
-    public List<String> getPaisesSeleccionados() {
-        return paisesSeleccionados;
+    public String getPaisSeleccionado() {
+        return paisSeleccionado;
     }
 
-    public void setPaisesSeleccionados(List<String> paisesSeleccionados) {
-        this.paisesSeleccionados = paisesSeleccionados;
+    public void setPaisSeleccionado(String paisSeleccionado) {
+        this.paisSeleccionado = paisSeleccionado;
     }
 
     public List<String> getPaisesDisponibles() {
         return paquetesBean.getPaisesDisponibles();
     }
 
-    public String getPaisesSeleccionadosTexto() {
-        if (paisesSeleccionados == null || paisesSeleccionados.isEmpty()) {
-            return "";
+    public String getPaisSeleccionadoTexto() {
+        if (paisSeleccionado == null || paisSeleccionado.isBlank()) {
+            return "—";
         }
 
-        return String.join(", ", paisesSeleccionados);
+        return paisSeleccionado;
     }
 
     public void reservar(PaquetesBean.Paquete paquete) {

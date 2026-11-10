@@ -63,20 +63,25 @@
                                 styleClass="btn btn-warning btn-sm px-3 fw-semibold"/>
                     </h:panelGroup>
 
-                    <!-- Opción 2: con sesión -> saludo y enlaces de texto. -->
-                    <h:panelGroup layout="block" styleClass="d-flex flex-column align-items-end lh-1"
-                                  rendered="#{usuarioBean.logged}">
-                        <span class="text-white small mb-1">Hola #{usuarioBean.nombreUsuario}</span>
-                        <span class="d-flex align-items-center gap-2 small">
-                            <h:link outcome="/perfil" value="Ver perfil"
-                                    styleClass="link-light text-decoration-underline"/>
-                            <span class="text-white-50" aria-hidden="true">|</span>
-                            <h:commandLink action="#{usuarioBean.logout}"
-                                           styleClass="link-light text-decoration-none">
-                                <h:outputText value="Cerrar Sesión"/>
-                            </h:commandLink>
-                        </span>
-                    </h:panelGroup>
+                    <!-- Opción 2: con sesión -> saludo y enlaces de texto.
+                         Va dentro de un h:form porque h:commandLink necesita un
+                         formulario padre para enviar la acción al servidor. -->
+                    <h:form id="formCabecera" prependId="false">
+                        <h:panelGroup layout="block" styleClass="d-flex flex-column align-items-end lh-1"
+                                      rendered="#{usuarioBean.logged}">
+                            <span class="text-white small mb-1">Hola #{usuarioBean.nombreUsuario}</span>
+                            <span class="d-flex align-items-center gap-2 small">
+                                <h:link outcome="/perfil" value="Ver perfil"
+                                        styleClass="link-light text-decoration-underline"/>
+                                <span class="text-white-50" aria-hidden="true">|</span>
+                                <p:commandLink action="#{usuarioBean.logout}"
+                                               ajax="false"
+                                               styleClass="link-light text-decoration-none">
+                                    <h:outputText value="Cerrar Sesión"/>
+                                </p:commandLink>
+                            </span>
+                        </h:panelGroup>
+                    </h:form>
 
                 </nav>
 
