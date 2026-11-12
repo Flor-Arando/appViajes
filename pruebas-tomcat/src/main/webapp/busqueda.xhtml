@@ -96,7 +96,7 @@
                                 <p:button value="Modificar búsqueda"
                                           icon="pi pi-pencil"
                                           outcome="/dashboard.xhtml"
-                                          styleClass="btn btn-outline-success rounded-pill"/>
+                                          styleClass="btn bg-success text-white border-0 rounded-pill"/>
 
                             </div>
 
@@ -149,8 +149,8 @@
 
                                             <img src="#{paquete.imagen}"
                                                  alt="#{paquete.descripcion}"
-                                                 class="card-img-top"
-                                                 style="height: 230px; object-fit: cover;"/>
+                                                 class="card-img-top object-fit-cover"
+                                                 style="height: 230px;"/>
 
                                             <span class="badge bg-dark position-absolute bottom-0 end-0 m-3 fs-6">
                                                 #{paquete.precioFormateado}
@@ -199,7 +199,7 @@
                                                              icon="pi pi-send"
                                                              action="#{dashboardBean.reservar(paquete)}"
                                                              update=":mensajes"
-                                                             styleClass="btn bg-success text-white border-0 rounded-pill w-100 mt-auto"/>
+                                                             styleClass="btn bg-success text-white border-0 w-100 mt-auto"/>
 
                                         </div>
 
