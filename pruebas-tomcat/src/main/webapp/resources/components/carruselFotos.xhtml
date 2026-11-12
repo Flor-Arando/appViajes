@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="jakarta.faces.composite"
+      xmlns:ui="jakarta.faces.facelets">
+
+<cc:interface>
+    <cc:attribute name="fotos" required="true"/>
+    <cc:attribute name="titulo" default="Lugares que visitarás"/>
+    <cc:attribute name="descripcion" default="Algunos de los lugares incluidos en esta experiencia."/>
+    <cc:attribute name="alt" default="Imagen del destino"/>
+</cc:interface>
+
+
+
+<cc:implementation>
+    <section id="carruselFotos" class="carousel slide rounded-4 overflow-hidden shadow-sm"
+             data-bs-ride="carousel" aria-label="#{cc.attrs.titulo}">
+
+        <div class="carousel-indicators">
+            <ui:repeat value="#{cc.attrs.fotos}" var="foto" varStatus="estado">
+                <button type="button" data-bs-target="#carruselFotos" data-bs-slide-to="#{estado.index}"
+                        class="#{estado.index eq 0 ? 'active' : ''}"
+                        aria-label="Mostrar foto #{estado.index + 1}"
+                        aria-current="#{estado.index eq 0 ? 'true' : 'false'}"></button>
+            </ui:repeat>
+        </div>
+
+
+
+
+
+
+
+
+
+        <div class="carousel-inner bg-dark">
+            <ui:repeat value="#{cc.attrs.fotos}" var="foto" varStatus="estado">
+                <div class="carousel-item #{estado.index eq 0 ? 'active' : ''}">
+                    <div class="ratio ratio-21x9">
+                        <img src="#{foto}" class="w-100 h-100 object-fit-cover" alt="#{cc.attrs.alt}"/>
+                    </div>
+                </div>
+            </ui:repeat>
+        </div>
+
+
+
+
+        <div class="carousel-caption d-none d-md-block text-start bg-dark bg-opacity-50 rounded-3 p-3">
+            <h2 class="h5 mb-1"><i class="pi pi-images me-2"></i>#{cc.attrs.titulo}</h2>
+            <p class="mb-0 small">#{cc.attrs.descripcion}</p>
+        </div>
+
+        <button class="carousel-control-prev" type="button" data-bs-target="#carruselFotos" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Foto anterior</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carruselFotos" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Foto siguiente</span>
+        </button>
+    </section>
+</cc:implementation>
+</html>

@@ -1,0 +1,63 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="primefaces"
+    template="/WEB-INF/templates/templateAgencia.xhtml">
+
+    <ui:define name="title">
+        Mi perfil | Horizonte Agencia de Viajes
+    </ui:define>
+
+    <ui:define name="bannerTitulo">
+        Mi perfil
+    </ui:define>
+
+    <ui:define name="bannerSubtitulo">
+        Consulta los datos de tu cuenta.
+    </ui:define>
+
+    <ui:define name="content">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="text-center mb-4">
+                            <i class="pi pi-user text-success" style="font-size: 4rem;"></i>
+                            <h2 class="fw-bold mt-3">Mi cuenta</h2>
+                        </div>
+
+                        <!-- Los datos se leen del usuario guardado en sesión. -->
+                        <div class="border rounded-3 p-3 mb-3">
+                            <div class="small text-muted">Nombre de usuario</div>
+                            <div class="fw-semibold">
+                                #{usuarioBean.usuarioAutenticado.username}
+                            </div>
+                        </div>
+
+                        <div class="border rounded-3 p-3 mb-4">
+                            <div class="small text-muted">Correo electrónico</div>
+                            <div class="fw-semibold">
+                                #{usuarioBean.usuarioAutenticado.email}
+                            </div>
+                        </div>
+
+                        <div class="border border-danger rounded-3 p-3">
+                            <h5 class="fw-bold text-danger">Eliminar cuenta</h5>
+                            <p class="text-muted">
+                                Esta acción eliminará tu cuenta y cerrará la sesión.
+                            </p>
+                            <!-- El bean borra la cuenta y redirige al login. -->
+                            <h:form>
+                                <h:commandButton value="Eliminar mi cuenta"
+                                                 action="#{usuarioBean.eliminarCuenta}"
+                                                 styleClass="btn btn-danger"
+                                                 onclick="return confirm('¿Estás seguro de que quieres eliminar tu cuenta?');"/>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

@@ -96,7 +96,7 @@ public class RegisterBean implements Serializable {
             return;
         }
 
-        if (!usuarioBean.agregarUsuario(userName, userName, userPassword)) {
+        if (!usuarioBean.agregarUsuario(userName, userName, userPassword, userEmail)) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     "Ese nombre de usuario ya está registrado", null));
             return;

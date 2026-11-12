@@ -48,7 +48,7 @@ public class LoginBean implements Serializable {
         }
 
         if (usuarioBean.autenticar(usuario, clave)) {
-            return "dashboard?faces-redirect=true";
+            return "perfil?faces-redirect=true";
         } else {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     "Usuario o contraseña incorrectos", null));
