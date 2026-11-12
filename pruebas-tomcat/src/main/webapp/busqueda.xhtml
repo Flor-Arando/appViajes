@@ -148,16 +148,12 @@
                                         <div class="position-relative">
 
                                             <img src="#{paquete.imagen}"
-                                                 alt="#{paquete.imagenAlt}"
+                                                 alt="#{paquete.descripcion}"
                                                  class="card-img-top"
                                                  style="height: 230px; object-fit: cover;"/>
 
                                             <span class="badge bg-dark position-absolute bottom-0 end-0 m-3 fs-6">
-                                                #{paquete.precio}
-                                            </span>
-
-                                            <span class="badge bg-success position-absolute top-0 start-0 m-3">
-                                                #{paquete.categoria}
+                                                #{paquete.precioFormateado}
                                             </span>
 
                                         </div>
@@ -167,7 +163,7 @@
                                         <div class="card-body d-flex flex-column p-4">
 
                                             <h3 class="card-title h5 fw-bold mb-2">
-                                                #{paquete.nombre}
+                                                #{paquete.titulo}
                                             </h3>
 
 
@@ -175,13 +171,13 @@
 
                                                 <i class="pi pi-map-marker me-1"></i>
 
-                                                #{paquete.pais}
+                                                #{paquete.destino}
 
                                             </p>
 
 
                                             <p class="card-text text-muted small">
-                                                #{paquete.imagenAlt}
+                                                #{paquete.descripcion}
                                             </p>
 
 
@@ -192,21 +188,11 @@
 
                                                     <i class="pi pi-clock text-warning me-2"></i>
 
-                                                    #{paquete.duracion} días
+                                                    #{paquete.duracion}
 
                                                 </span>
 
                                             </div>
-
-                                            <!-- LUGARES VISITADOS -->
-                                            <div class="small text-muted mb-3">
-
-                                                <strong>Visitando:</strong>
-
-                                                #{paquete.visitando}
-
-                                            </div>
-
 
                                             <!-- RESERVAR -->
                                             <p:commandButton value="Reservar paquete"

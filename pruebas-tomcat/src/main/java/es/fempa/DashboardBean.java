@@ -6,7 +6,6 @@ import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.enterprise.context.SessionScoped;
-import jakarta.inject.Inject;
 import java.util.stream.Collectors;
 import java.time.temporal.ChronoUnit;
 import jakarta.inject.Named;
@@ -42,9 +41,7 @@ public class DashboardBean implements Serializable {
     private List<PaqueteViaje> topDestinos;
     private List<ResponsiveOption> opcionesResponsive;
 
-    @Inject
-    private PaquetesBean paquetesBean;
-    private List<PaquetesBean.Paquete> paquetesEncontrados = new ArrayList<>();
+    private List<PaqueteViaje> paquetesEncontrados = new ArrayList<>();
 
     private String paisSeleccionado = "";
 
@@ -206,23 +203,60 @@ public class DashboardBean implements Serializable {
         );
 
         // Obtener los paquetes que coinciden con la búsqueda.
-        paquetesEncontrados = paquetesBean.getTodosLosPaquetes()
+        paquetesEncontrados = todosLosPaquetes()
                 .stream()
 
                 // Filtrar por el país seleccionado.
                 .filter(paquete ->
-                        paisSeleccionado.equalsIgnoreCase(paquete.getPais())
+                        paisSeleccionado.equalsIgnoreCase(extraerPais(paquete))
                 )
 
                 // Filtrar por duración.
                 .filter(paquete ->
-                        paquete.getDuracion() <= diasDisponibles
+                        extraerDias(paquete) <= diasDisponibles
                 )
 
                 .collect(Collectors.toList());
 
         // Ir a la página de resultados.
         return "busqueda?faces-redirect=true";
+    }
+
+    /**
+     * Todos los paquetes ofertados (ofertas + destinos destacados).
+     */
+    private List<PaqueteViaje> todosLosPaquetes() {
+        List<PaqueteViaje> todos = new ArrayList<>(ofertas);
+        todos.addAll(topDestinos);
+        return todos;
+    }
+
+    /**
+     * Extrae el país del destino (p. ej. "París, Francia" -> "Francia").
+     */
+    private String extraerPais(PaqueteViaje paquete) {
+        String destino = paquete.getDestino();
+        if (destino == null || destino.isBlank()) {
+            return "";
+        }
+        int coma = destino.indexOf(',');
+        return (coma >= 0 ? destino.substring(coma + 1) : destino).trim();
+    }
+
+    /**
+     * Extrae el número de días de la duración (p. ej. "5 días / 4 noches" -> 5).
+     */
+    private long extraerDias(PaqueteViaje paquete) {
+        String duracion = paquete.getDuracion();
+        if (duracion == null || duracion.isBlank()) {
+            return 0L;
+        }
+        String[] partes = duracion.trim().split("\\s+");
+        try {
+            return Long.parseLong(partes[0]);
+        } catch (NumberFormatException e) {
+            return 0L;
+        }
     }
 
     /**
@@ -275,7 +309,7 @@ public class DashboardBean implements Serializable {
         return opcionesResponsive;
     }
 
-    public List<PaquetesBean.Paquete> getPaquetesEncontrados() {
+    public List<PaqueteViaje> getPaquetesEncontrados() {
         return paquetesEncontrados;
     }
 
@@ -310,7 +344,12 @@ public class DashboardBean implements Serializable {
     }
 
     public List<String> getPaisesDisponibles() {
-        return paquetesBean.getPaisesDisponibles();
+        return todosLosPaquetes().stream()
+                .map(this::extraerPais)
+                .filter(pais -> !pais.isBlank())
+                .distinct()
+                .sorted()
+                .toList();
     }
 
     public String getPaisSeleccionadoTexto() {
@@ -319,20 +358,5 @@ public class DashboardBean implements Serializable {
         }
 
         return paisSeleccionado;
-    }
-
-    public void reservar(PaquetesBean.Paquete paquete) {
-
-        if (paquete == null) {
-            return;
-        }
-
-        anadirMensaje(
-                FacesMessage.SEVERITY_INFO,
-                "Reserva",
-                "Has seleccionado \"" + paquete.getNombre()
-                        + "\" por " + paquete.getPrecio()
-                        + ". La reserva online estará disponible próximamente."
-        );
     }
 }
