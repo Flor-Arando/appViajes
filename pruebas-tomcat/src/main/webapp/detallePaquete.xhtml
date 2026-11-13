@@ -96,6 +96,8 @@
                                             <p:spinner id="viajeros"
                                                        value="#{detallePaqueteBean.viajeros}"
                                                        min="1" max="20" stepFactor="1"
+                                                       upButtonStyleClass="bg-success text-white border-0"
+                                                       downButtonStyleClass="bg-success text-white border-0"
                                                        styleClass="form-control d-inline-block w-auto">
                                                 <p:ajax event="change" update="resumenPrecio" process="@this"/>
                                             </p:spinner>

@@ -82,6 +82,11 @@ public class UsuarioBean implements Serializable {
         return usuarioActual != null;
     }
 
+    // True si el usuario en sesión es el administrador.
+    public boolean isAdmin() {
+        return usuarioActual != null && "admin".equalsIgnoreCase(usuarioActual.getUsername());
+    }
+
     // Nombre para mostrar en la cabecera; vacío si no hay sesión iniciada.
     public String getNombreUsuario() {
         return usuarioActual == null ? "" : usuarioActual.getNombre();

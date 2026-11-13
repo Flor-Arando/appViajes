@@ -71,6 +71,12 @@
                                       rendered="#{usuarioBean.logged}">
                             <span class="text-white small mb-1">Hola #{usuarioBean.nombreUsuario}</span>
                             <span class="d-flex align-items-center gap-2">
+                                <h:link outcome="/adminPaquetes" value="Panel admin"
+                                        rendered="#{usuarioBean.admin}"
+                                        style="font-size: 0.875rem;"
+                                        styleClass="link-warning text-decoration-none fw-semibold"/>
+                                <span class="text-white-50" aria-hidden="true"
+                                      rendered="#{usuarioBean.admin}">|</span>
                                 <h:link outcome="/perfil" value="Ver perfil"
                                         style="font-size: 0.875rem;"
                                         styleClass="link-light text-decoration-underline"/>
