@@ -147,13 +147,9 @@ public class DashboardBean implements Serializable {
         );
     }
 
-    /**
-     * El buscador todavía no está conectado a ningún servicio:
-     * únicamente devuelve un mensaje informativo al usuario.
-     */
     public String buscar() {
 
-        // Comprobar que se ha seleccionado al menos un país.
+        // Comprobar que se ha seleccionado un país.
         if (paisSeleccionado == null || paisSeleccionado.isBlank()) {
 
             anadirMensaje(
