@@ -1,7 +1,9 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
     xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="primefaces"
     xmlns:fotos="jakarta.faces.composite/components"
     template="/WEB-INF/templates/templateAgencia.xhtml">
 
@@ -10,6 +12,15 @@
     <ui:define name="bannerSubtitulo">Revisa lo que incluye el paquete que has elegido.</ui:define>
 
     <ui:define name="content">
+        <!-- Flecha para volver al dashboard (esquina superior izquierda) -->
+        <div class="mb-3">
+            <h:link outcome="/dashboard" styleClass="btn btn-outline-secondary btn-sm rounded-circle"
+                    title="Volver al inicio">
+                <i class="pi pi-arrow-left"></i>
+                <span class="visually-hidden">Volver al inicio</span>
+            </h:link>
+        </div>
+
         <h:panelGroup rendered="#{not empty detallePaqueteBean.detalle.paquete}" layout="block">
 
             <!-- FICHA PRINCIPAL: imagen + datos del paquete -->
@@ -75,16 +86,46 @@
                                 </ui:repeat>
                             </ul>
 
-                            <div class="border-top pt-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
-                                <div>
-                                    <span class="small text-secondary d-block">Precio por persona desde</span>
-                                    <strong class="fs-2 text-success">
-                                        <h:outputText value="#{detallePaqueteBean.detalle.paquete.precioFormateado}"/>
-                                    </strong>
-                                </div>
-                                <div class="d-flex flex-wrap gap-2">
-                                    <button type="button" class="btn bg-success text-white border-0 px-4">Comprar paquete</button>
-                                </div>
+                            <div class="border-top pt-4">
+                                <h:form id="formCompra">
+
+                                    <!-- Selector de número de viajeros -->
+                                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+                                        <div>
+                                            <span class="small text-secondary d-block mb-1">Número de viajeros</span>
+                                            <p:spinner id="viajeros"
+                                                       value="#{detallePaqueteBean.viajeros}"
+                                                       min="1" max="20" stepFactor="1"
+                                                       styleClass="form-control d-inline-block w-auto">
+                                                <p:ajax event="change" update="resumenPrecio" process="@this"/>
+                                            </p:spinner>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="small text-secondary d-block">Precio por persona</span>
+                                            <strong class="text-success">
+                                                <h:outputText value="#{detallePaqueteBean.detalle.paquete.precioFormateado}"/>
+                                            </strong>
+                                        </div>
+                                    </div>
+
+                                    <!-- Total según nº de viajeros -->
+                                    <h:panelGroup id="resumenPrecio" layout="block"
+                                                  styleClass="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+                                        <div>
+                                            <span class="small text-secondary d-block">Total para
+                                                <h:outputText value="#{detallePaqueteBean.viajeros}"/> viajero(s)</span>
+                                            <strong class="fs-2 text-success">
+                                                <h:outputText value="#{detallePaqueteBean.precioTotalFormateado}"/>
+                                            </strong>
+                                        </div>
+                                        <p:commandButton value="Comprar paquete"
+                                                         icon="pi pi-shopping-cart"
+                                                         action="#{detallePaqueteBean.comprar}"
+                                                         ajax="false"
+                                                         styleClass="btn bg-success text-white border-0 px-4"/>
+                                    </h:panelGroup>
+
+                                </h:form>
                             </div>
 
                         </div>

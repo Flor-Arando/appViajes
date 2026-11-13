@@ -70,14 +70,19 @@
                         <h:panelGroup layout="block" styleClass="d-flex flex-column align-items-end lh-1"
                                       rendered="#{usuarioBean.logged}">
                             <span class="text-white small mb-1">Hola #{usuarioBean.nombreUsuario}</span>
-                            <span class="d-flex align-items-center gap-2 small">
+                            <span class="d-flex align-items-center gap-2">
                                 <h:link outcome="/perfil" value="Ver perfil"
+                                        style="font-size: 0.875rem;"
                                         styleClass="link-light text-decoration-underline"/>
                                 <span class="text-white-50" aria-hidden="true">|</span>
                                 <p:commandLink action="#{usuarioBean.logout}"
                                                ajax="false"
+                                               style="font-size: 0.875rem;"
                                                styleClass="link-light text-decoration-none">
                                     <h:outputText value="Cerrar Sesión"/>
+                                    <p:confirm header="Cerrar sesión"
+                                               message="¿Seguro que quieres cerrar sesión?"
+                                               icon="pi pi-exclamation-triangle"/>
                                 </p:commandLink>
                             </span>
                         </h:panelGroup>
@@ -111,11 +116,26 @@
     <footer class="bg-dark text-white text-center py-4 mt-auto">
         <div class="container">
             <p class="fw-semibold mb-1">MorfeoTrip · Agencia de Viajes</p>
-            <p class="small text-white-50 mb-0">
+            <p class="small text-white-50 mb-2">
                 Proyecto de ejemplo con Jakarta Faces, PrimeFaces y Bootstrap.
+            </p>
+            <p class="small mb-0">
+                <h:link outcome="/contacto" value="¿Necesitas ayuda? Contacta con nosotros"
+                        styleClass="link-light text-decoration-underline"/>
             </p>
         </div>
     </footer>
+
+    <!-- Diálogo de confirmación reutilizable (p:confirm) -->
+    <h:form>
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true"
+                         styleClass="shadow">
+            <p:commandButton value="Sí" type="button"
+                             styleClass="btn bg-success text-white border-0 px-4 ui-confirmdialog-yes"/>
+            <p:commandButton value="No" type="button"
+                             styleClass="btn btn-outline-secondary px-4 ui-confirmdialog-no"/>
+        </p:confirmDialog>
+    </h:form>
 
     <!-- Mensajes globales -->
     <p:growl id="mensajes" showDetail="true" life="6000"/>
