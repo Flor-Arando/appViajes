@@ -1,0 +1,152 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="primefaces"
+    template="/WEB-INF/templates/templateAgencia.xhtml">
+
+    <ui:define name="title">
+        Contacto | MorfeoTrip Agencia de Viajes
+    </ui:define>
+
+    <ui:define name="bannerTitulo">
+        Hablemos de tu próximo viaje
+    </ui:define>
+
+    <ui:define name="bannerSubtitulo">
+        Escríbenos y te ayudamos a encontrar el destino perfecto.
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="row justify-content-center g-4">
+
+            <!-- =====================================================
+                 FORMULARIO DE CONTACTO
+                 ===================================================== -->
+            <div class="col-12 col-lg-7">
+
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4 p-md-5">
+
+                        <h2 class="h4 fw-bold mb-4">
+                            <i class="pi pi-envelope text-success me-2"></i>Escríbenos
+                        </h2>
+
+                        <h:form id="formContacto">
+
+                            <p:messages id="mensajesContacto" showDetail="true" closable="true"/>
+
+                            <div class="mb-3">
+                                <h:outputLabel for="contactoNombre" value="Nombre" styleClass="form-label"/>
+                                <p:inputText id="contactoNombre"
+                                             value="#{contactoBean.nombre}"
+                                             required="true"
+                                             requiredMessage="Indica tu nombre."
+                                             styleClass="form-control"
+                                             placeholder="Tu nombre"/>
+                            </div>
+
+                            <div class="mb-3">
+                                <h:outputLabel for="contactoEmail" value="Correo electrónico" styleClass="form-label"/>
+                                <p:inputText id="contactoEmail"
+                                             value="#{contactoBean.email}"
+                                             required="true"
+                                             requiredMessage="Escribe tu correo."
+                                             styleClass="form-control"
+                                             placeholder="tu@correo.com"/>
+                            </div>
+
+                            <div class="mb-3">
+                                <h:outputLabel for="contactoAsunto" value="Asunto" styleClass="form-label"/>
+                                <h:selectOneMenu id="contactoAsunto"
+                                                 value="#{contactoBean.asunto}"
+                                                 required="true"
+                                                 requiredMessage="Elige un asunto."
+                                                 styleClass="form-select">
+                                    <f:selectItem itemValue="" itemLabel="Selecciona un asunto" noSelectionOption="true"/>
+                                    <f:selectItem itemValue="Consulta general" itemLabel="Consulta general"/>
+                                    <f:selectItem itemValue="Reservas" itemLabel="Sobre una reserva"/>
+                                    <f:selectItem itemValue="Paquetes" itemLabel="Paquetes y destinos"/>
+                                    <f:selectItem itemValue="Reclamación" itemLabel="Reclamación o sugerencia"/>
+                                </h:selectOneMenu>
+                            </div>
+
+                            <div class="mb-4">
+                                <h:outputLabel for="contactoMensaje" value="Mensaje" styleClass="form-label"/>
+                                <p:inputTextarea id="contactoMensaje"
+                                                 value="#{contactoBean.mensaje}"
+                                                 required="true"
+                                                 requiredMessage="Cuéntanos en qué podemos ayudarte."
+                                                 rows="5"
+                                                 counter="contador"
+                                                 maxlength="600"
+                                                 styleClass="form-control"
+                                                 placeholder="Escribe aquí tu consulta (mínimo 10 caracteres)..."/>
+                                <h:outputText id="contador" styleClass="small text-secondary"/>
+                            </div>
+
+                            <p:commandButton value="Enviar mensaje"
+                                             icon="pi pi-send"
+                                             action="#{contactoBean.enviar}"
+                                             update="@form :mensajes"
+                                             styleClass="btn bg-success text-white border-0 px-4"/>
+
+                        </h:form>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- =====================================================
+                 DATOS DE LA AGENCIA
+                 ===================================================== -->
+            <div class="col-12 col-lg-5">
+
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <h3 class="h6 text-uppercase fw-bold text-secondary mb-3">Oficina central</h3>
+                        <p class="mb-2">
+                            <i class="pi pi-map-marker text-success me-2"></i>
+                            Calle del Viajero, 12 · Alicante
+                        </p>
+                        <p class="mb-2">
+                            <i class="pi pi-phone text-success me-2"></i>
+                            +34 900 123 456
+                        </p>
+                        <p class="mb-0">
+                            <i class="pi pi-envelope text-success me-2"></i>
+                            hola@morfeotrip.example
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <h3 class="h6 text-uppercase fw-bold text-secondary mb-3">Horario de atención</h3>
+                        <ul class="list-unstyled mb-0">
+                            <li class="d-flex justify-content-between py-1">
+                                <span class="text-secondary">Lunes a viernes</span>
+                                <strong>9:00 – 20:00</strong>
+                            </li>
+                            <li class="d-flex justify-content-between py-1">
+                                <span class="text-secondary">Sábados</span>
+                                <strong>10:00 – 14:00</strong>
+                            </li>
+                            <li class="d-flex justify-content-between py-1">
+                                <span class="text-secondary">Domingos y festivos</span>
+                                <strong>Cerrado</strong>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </ui:define>
+
+</ui:composition>

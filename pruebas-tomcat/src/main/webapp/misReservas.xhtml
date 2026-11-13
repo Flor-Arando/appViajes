@@ -1,0 +1,84 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="primefaces"
+    template="/WEB-INF/templates/templateAgencia.xhtml">
+
+    <ui:define name="title">
+        Mis reservas | MorfeoTrip Agencia de Viajes
+    </ui:define>
+
+    <ui:define name="bannerTitulo">
+        Mis reservas
+    </ui:define>
+
+    <ui:define name="bannerSubtitulo">
+        Consulta los viajes que has reservado con MorfeoTrip.
+    </ui:define>
+
+    <ui:define name="content">
+
+        <!-- =========================================================
+             MIS RESERVAS
+             ========================================================= -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-12 col-xl-10">
+
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+                        <h2 class="h4 fw-bold mb-0">
+                            <i class="pi pi-ticket text-success me-2"></i>Tus reservas
+                        </h2>
+                        <span class="badge bg-success fs-6">
+                            #{reservasBean.reservas.size()} viaje(s) · #{reservasBean.totalViajeros} viajero(s)
+                        </span>
+                    </div>
+
+                    <p:dataTable value="#{reservasBean.reservas}"
+                                 var="reserva"
+                                 paginator="true"
+                                 rows="5"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 currentPageReportTemplate="Mostrando {startRecord}-{endRecord} de {totalRecords}"
+                                 emptyMessage="Todavía no tienes ninguna reserva."
+                                 styleClass="table table-borderless align-middle mb-0">
+
+                        <p:column headerText="Código" style="width: 14%;">
+                            <strong class="text-success">#{reserva.codigo}</strong>
+                        </p:column>
+
+                        <p:column headerText="Paquete" sortBy="#{reserva.titulo}" style="width: 30%;">
+                            <div class="fw-semibold">#{reserva.titulo}</div>
+                            <small class="text-secondary">#{reserva.destino}</small>
+                        </p:column>
+
+                        <p:column headerText="Fecha reserva" sortBy="#{reserva.fechaReserva}" style="width: 16%;">
+                            #{reserva.fechaReservaTexto}
+                        </p:column>
+
+                        <p:column headerText="Viajeros" style="width: 10%;">
+                            <span class="badge bg-light text-dark border">#{reserva.viajeros}</span>
+                        </p:column>
+
+                        <p:column headerText="Precio" style="width: 14%;">
+                            <strong>#{reserva.precioFormateado}</strong>
+                        </p:column>
+
+                        <p:column headerText="Estado" style="width: 16%;">
+                            <p:badge value="#{reserva.estado}"
+                                     severity="#{reserva.estado eq 'CONFIRMADA' ? 'success' : 'warning'}"/>
+                        </p:column>
+
+                    </p:dataTable>
+
+                </div>
+
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

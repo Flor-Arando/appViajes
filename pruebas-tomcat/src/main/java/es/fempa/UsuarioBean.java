@@ -143,6 +143,91 @@ public class UsuarioBean implements Serializable {
         return null;
     }
 
+    public String getNombreEdicion() {
+        // Inicialización perezosa: si aún no se ha cargado, toma el del usuario.
+        if (nombreEdicion == null) {
+            Usuario u = getUsuarioAutenticado();
+            return u != null ? u.getNombre() : "";
+        }
+        return nombreEdicion;
+    }
+    public void setNombreEdicion(String nombreEdicion) { this.nombreEdicion = nombreEdicion; }
+
+    public String getEmailEdicion() {
+        if (emailEdicion == null) {
+            Usuario u = getUsuarioAutenticado();
+            return u != null ? u.getEmail() : "";
+        }
+        return emailEdicion;
+    }
+    public void setEmailEdicion(String emailEdicion) { this.emailEdicion = emailEdicion; }
+
+    public String getPasswordActual() { return passwordActual; }
+    public void setPasswordActual(String passwordActual) { this.passwordActual = passwordActual; }
+
+    public String getPasswordNueva() { return passwordNueva; }
+    public void setPasswordNueva(String passwordNueva) { this.passwordNueva = passwordNueva; }
+
+    // Campos editables del perfil (se rellenan al cargar la página).
+    private String nombreEdicion;
+    private String emailEdicion;
+    private String passwordActual;
+    private String passwordNueva;
+
+    // Precarga los campos editables con los datos del usuario autenticado.
+    public void prepararEdicion() {
+        Usuario usuario = getUsuarioAutenticado();
+        if (usuario != null) {
+            nombreEdicion = usuario.getNombre();
+            emailEdicion = usuario.getEmail();
+        }
+    }
+
+    // Guarda los cambios del perfil validándolos en el servidor.
+    public String actualizarPerfil() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        Usuario usuario = getUsuarioAutenticado();
+
+        if (usuario == null) {
+            return "/login?faces-redirect=true";
+        }
+
+        if (nombreEdicion == null || nombreEdicion.trim().isEmpty()) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+                    "El nombre no puede estar vacío.", null));
+            return null;
+        }
+
+        if (emailEdicion == null || !emailEdicion.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+                    "Escribe un correo electrónico válido.", null));
+            return null;
+        }
+
+        // Cambio de contraseña opcional: exige la actual y una nueva válida.
+        if (passwordNueva != null && !passwordNueva.isEmpty()) {
+            if (passwordActual == null || !passwordActual.equals(usuario.getPassword())) {
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        "La contraseña actual no es correcta.", null));
+                return null;
+            }
+            if (!passwordNueva.matches("^(?=.*[A-Z])(?=.*\\d).{8,}$")) {
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+                        "La nueva contraseña debe tener 8 caracteres, una mayúscula y un número.", null));
+                return null;
+            }
+            usuario.setPassword(passwordNueva);
+        }
+
+        usuario.setNombre(nombreEdicion.trim());
+        usuario.setEmail(emailEdicion.trim().toLowerCase(Locale.ROOT));
+
+        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+                "Perfil actualizado correctamente.", null));
+        prepararEdicion();
+        return null;
+    }
+
     // Elimina la cuenta actual y cierra la sesión.
     public String eliminarCuenta() {
         Usuario usuario = getUsuarioAutenticado();
@@ -187,6 +272,18 @@ public class UsuarioBean implements Serializable {
 
         public String getEmail() {
             return email;
+        }
+
+        public void setNombre(String nombre) {
+            this.nombre = nombre;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
         }
     }
 
