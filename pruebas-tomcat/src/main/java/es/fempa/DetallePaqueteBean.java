@@ -20,8 +20,10 @@ public class DetallePaqueteBean {
 
     @PostConstruct
     public void cargarPaquete() {
+        // Se lee sin borrar: en el postback de "Comprar paquete" el bean se crea
+        // de nuevo y necesita recuperar el paquete para poder redirigir al pago.
         Object seleccionado = FacesContext.getCurrentInstance()
-                .getExternalContext().getSessionMap().remove("paqueteSeleccionado");
+                .getExternalContext().getSessionMap().get("paqueteSeleccionado");
 
         if (seleccionado instanceof PaqueteViaje) {
             PaqueteViaje paquete = (PaqueteViaje) seleccionado;
@@ -36,6 +38,19 @@ public class DetallePaqueteBean {
         } else {
             detalle = new DetallePaquete();
         }
+    }
+
+    /**
+     * Abre la pantalla de pago con el paquete que se está viendo.
+     * Vuelve a guardar el paquete en la sesión para que PagoBean lo recupere.
+     */
+    public String irAPago() {
+        if (detalle == null || detalle.getPaquete() == null) {
+            return null;
+        }
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap()
+                .put("paqueteSeleccionado", detalle.getPaquete());
+        return "/pago.xhtml?faces-redirect=true";
     }
 
     public DetallePaquete getDetalle() {

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="jakarta.faces.composite"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets">
+
+    <!--
+        Componente sencillo de pago que muestra el resumen del pedido.
+        Recibe el DetallePaquete del paquete seleccionado y lo pinta como tarjeta.
+
+        Uso: <pago:resumenPago detalle="#{pagoBean.detalle}"/>
+    -->
+    <cc:interface>
+        <cc:attribute name="detalle" required="true" type="es.fempa.modelo.DetallePaquete"/>
+    </cc:interface>
+
+    <cc:implementation>
+        <div class="card border-0 rounded-4 shadow-sm">
+            <div class="card-body p-4">
+
+                <h2 class="h5 text-success mb-3">Resumen del pedido</h2>
+
+                <h:graphicImage value="#{cc.attrs.detalle.imagen}"
+                                alt="#{cc.attrs.detalle.paquete.titulo}"
+                                styleClass="rounded-3 w-100 mb-3"
+                                style="height: 150px; object-fit: cover;"/>
+
+                <ul class="list-group list-group-flush mb-3">
+                    <li class="list-group-item px-0">
+                        <div class="fw-semibold">#{cc.attrs.detalle.paquete.titulo}</div>
+                        <small class="text-secondary">
+                            #{cc.attrs.detalle.paquete.destino} · #{cc.attrs.detalle.paquete.duracion}
+                        </small>
+                    </li>
+                    <li class="list-group-item px-0">
+                        <div class="fw-semibold">Alojamiento</div>
+                        <small class="text-secondary">#{cc.attrs.detalle.hotel}</small>
+                    </li>
+                    <li class="list-group-item px-0">
+                        <div class="fw-semibold mb-1">Incluido</div>
+                        <ui:repeat value="#{cc.attrs.detalle.incluidos}" var="incluido">
+                            <small class="d-block text-secondary">
+                                <i class="pi pi-check text-success me-1"></i>#{incluido}
+                            </small>
+                        </ui:repeat>
+                    </li>
+                </ul>
+
+                <div class="d-flex justify-content-between text-secondary mb-2">
+                    <span>Precio por persona</span>
+                    <span>#{cc.attrs.detalle.paquete.precioFormateado}</span>
+                </div>
+
+                <hr/>
+
+                <div class="d-flex justify-content-between fw-bold fs-5">
+                    <span>Total</span>
+                    <span>#{cc.attrs.detalle.paquete.precioFormateado}</span>
+                </div>
+
+            </div>
+        </div>
+    </cc:implementation>
+</html>

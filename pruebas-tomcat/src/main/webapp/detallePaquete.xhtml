@@ -2,6 +2,7 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="jakarta.faces.html"
     xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="primefaces"
     xmlns:fotos="jakarta.faces.composite/components"
     template="/WEB-INF/templates/templateAgencia.xhtml">
 
@@ -82,9 +83,14 @@
                                         <h:outputText value="#{detallePaqueteBean.detalle.paquete.precioFormateado}"/>
                                     </strong>
                                 </div>
-                                <div class="d-flex flex-wrap gap-2">
-                                    <button type="button" class="btn bg-success text-white border-0 px-4">Comprar paquete</button>
-                                </div>
+                                <!-- Antes era un botón sin acción: ahora guarda el paquete
+                                     en sesión y navega a la pantalla de pago. -->
+                                <h:form id="formComprar" styleClass="d-flex flex-wrap gap-2">
+                                    <p:commandButton value="Comprar paquete"
+                                                     action="#{detallePaqueteBean.irAPago}"
+                                                     ajax="false"
+                                                     styleClass="btn bg-success text-white border-0 px-4"/>
+                                </h:form>
                             </div>
 
                         </div>
