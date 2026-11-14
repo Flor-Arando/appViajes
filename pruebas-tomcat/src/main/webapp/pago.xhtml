@@ -37,7 +37,10 @@
 
                     <!-- RESUMEN DEL PEDIDO (componente composite) -->
                     <aside class="col-lg-5 order-lg-2">
-                        <pago:resumenPago detalle="#{pagoBean.detalle}"/>
+                        <pago:resumenPago detalle="#{pagoBean.detalle}"
+                                          viajeros="#{pagoBean.viajeros}"
+                                          precioPersona="#{pagoBean.precioPersonaFormateado}"
+                                          total="#{pagoBean.totalFormateado}"/>
                     </aside>
 
                     <!-- FORMULARIO DE PAGO -->
@@ -49,14 +52,14 @@
                                 <!-- Pestañas Bootstrap para cambiar entre tarjeta y transferencia. -->
                                 <ul class="nav nav-tabs mb-4" id="metodosPago" role="tablist">
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link active" id="tarjeta-tab" data-bs-toggle="tab"
+                                        <button class="nav-link active text-success fw-semibold" id="tarjeta-tab" data-bs-toggle="tab"
                                                 data-bs-target="#tarjeta-panel"
                                                 type="button" role="tab" aria-controls="tarjeta-panel" aria-selected="true">
                                             Tarjeta
                                         </button>
                                     </li>
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link" id="transferencia-tab" data-bs-toggle="tab"
+                                        <button class="nav-link text-success fw-semibold" id="transferencia-tab" data-bs-toggle="tab"
                                                 data-bs-target="#transferencia-panel"
                                                 type="button" role="tab" aria-controls="transferencia-panel" aria-selected="false">
                                             Transferencia bancaria
@@ -122,8 +125,8 @@
                                         <p:commandButton value="Pagar #{pagoBean.totalFormateado}"
                                                          action="#{pagoBean.pagarConTarjeta}"
                                                          onstart="return validarPagoTarjeta();"
-                                                         update=":dialogoPago :mensajes"
-                                                         styleClass="btn btn-success btn-lg w-100"/>
+                                                         update="formPago mensajes"
+                                                         styleClass="btn bg-success text-white border-0 btn-lg w-100"/>
                                     </section>
 
                                     <!-- PAGO POR TRANSFERENCIA -->
@@ -172,8 +175,8 @@
                                         <p:commandButton value="Confirmar transferencia"
                                                          action="#{pagoBean.pagarConTransferencia}"
                                                          onstart="return validarTransferencia();"
-                                                         update=":dialogoPago :mensajes"
-                                                         styleClass="btn btn-success btn-lg w-100"/>
+                                                         update="formPago mensajes"
+                                                         styleClass="btn bg-success text-white border-0 btn-lg w-100"/>
                                     </section>
 
                                 </div>
@@ -183,9 +186,7 @@
 
                 </div>
 
-            </h:form>
-
-            <!-- VENTANA EMERGENTE DE PAGO REALIZADO (fuera del formulario para actualizarla por id) -->
+            <!-- VENTANA EMERGENTE DE PAGO REALIZADO (dentro del formulario para poder refrescarla) -->
             <p:dialog id="dialogoPago" widgetVar="dialogoPago" header="Pago realizado"
                       modal="true" responsive="true" draggable="false" resizable="false"
                       styleClass="rounded-4">
@@ -201,10 +202,12 @@
                     <p class="small text-secondary">
                         Es una simulación: no se ha cobrado ningún importe.
                     </p>
-                    <h:link outcome="/historialVuelos" value="Ir al historial de vuelos"
-                            styleClass="btn btn-success px-4"/>
+                    <h:link outcome="/misReservas" value="Ir a mis reservas"
+                            styleClass="btn bg-success text-white border-0 px-4"/>
                 </div>
             </p:dialog>
+
+            </h:form>
 
         </h:panelGroup>
 

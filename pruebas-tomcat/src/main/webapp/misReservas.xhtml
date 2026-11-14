@@ -27,6 +27,7 @@
             <div class="col-12 col-xl-10">
 
                 <div class="card border-0 shadow-sm rounded-4 p-4">
+                  <h:form id="formReservas">
 
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
                         <h2 class="h4 fw-bold mb-0">
@@ -67,17 +68,110 @@
                             <strong>#{reserva.totalFormateado}</strong>
                         </p:column>
 
-                        <p:column headerText="Estado" style="width: 16%;">
+                        <p:column headerText="Estado" style="width: 14%;">
                             <p:badge value="#{reserva.estado}"
                                      severity="#{reserva.estado eq 'CONFIRMADA' ? 'success' : 'warning'}"/>
                         </p:column>
 
+                        <p:column headerText="Detalle" style="width: 14%;">
+                            <p:commandButton value="Ver detalle"
+                                             icon="pi pi-search"
+                                             actionListener="#{reservasBean.seleccionar(reserva)}"
+                                             update=":dialogoDetalleReserva"
+                                             oncomplete="PF('dialogoDetalleReserva').show()"
+                                             styleClass="btn btn-sm bg-success text-white border-0"/>
+                        </p:column>
+
                     </p:dataTable>
 
+                  </h:form>
                 </div>
 
             </div>
         </div>
+
+
+
+        <!-- =========================================================
+             DETALLE DE UNA RESERVA (ficha completa del paquete)
+             ========================================================= -->
+        <p:dialog id="dialogoDetalleReserva" widgetVar="dialogoDetalleReserva"
+                  header="Detalle de la reserva" modal="true" responsive="true"
+                  draggable="false" resizable="false" width="720"
+                  styleClass="rounded-4">
+
+            <h:panelGroup layout="block" rendered="#{not empty reservasBean.seleccionada}">
+
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                    <div>
+                        <div class="h5 fw-bold mb-0">#{reservasBean.seleccionada.titulo}</div>
+                        <small class="text-secondary">
+                            #{reservasBean.seleccionada.destino} ·
+                            #{reservasBean.detalleSeleccionado.paquete.duracion}
+                        </small>
+                    </div>
+                    <p:badge value="#{reservasBean.seleccionada.estado}"
+                             severity="#{reservasBean.seleccionada.estado eq 'CONFIRMADA' ? 'success' : 'warning'}"
+                             styleClass="fs-6"/>
+                </div>
+
+                <h:graphicImage value="#{reservasBean.detalleSeleccionado.imagen}"
+                                alt="#{reservasBean.seleccionada.titulo}"
+                                styleClass="rounded-3 w-100 mb-3"
+                                style="height: 180px; object-fit: cover;"/>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-6 col-md-3">
+                        <div class="bg-light rounded-3 p-2 text-center h-100">
+                            <small class="text-secondary d-block">Código</small>
+                            <strong class="text-success">#{reservasBean.seleccionada.codigo}</strong>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="bg-light rounded-3 p-2 text-center h-100">
+                            <small class="text-secondary d-block">Fecha</small>
+                            <strong>#{reservasBean.seleccionada.fechaReservaTexto}</strong>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="bg-light rounded-3 p-2 text-center h-100">
+                            <small class="text-secondary d-block">Viajeros</small>
+                            <strong>#{reservasBean.seleccionada.viajeros}</strong>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="bg-light rounded-3 p-2 text-center h-100">
+                            <small class="text-secondary d-block">Total</small>
+                            <strong class="text-success">#{reservasBean.seleccionada.totalFormateado}</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <span class="small text-secondary d-block">Alojamiento</span>
+                    <span>#{reservasBean.detalleSeleccionado.hotel}</span>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="fw-semibold mb-1">Incluido</div>
+                        <ui:repeat value="#{reservasBean.detalleSeleccionado.incluidos}" var="incluido">
+                            <small class="d-block text-secondary">
+                                <i class="pi pi-check text-success me-1"></i>#{incluido}
+                            </small>
+                        </ui:repeat>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="fw-semibold mb-1">Itinerario</div>
+                        <ui:repeat value="#{reservasBean.detalleSeleccionado.itinerario}" var="dia">
+                            <small class="d-block text-secondary">#{dia}</small>
+                        </ui:repeat>
+                    </div>
+                </div>
+
+            </h:panelGroup>
+
+        </p:dialog>
 
     </ui:define>
 
