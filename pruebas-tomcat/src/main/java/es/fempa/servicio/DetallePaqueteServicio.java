@@ -131,4 +131,22 @@ public class DetallePaqueteServicio implements Serializable {
     public DetallePaquete buscarPorId(int id) {
         return catalogoDetalles.get(id);
     }
+
+    /**
+     * Guarda (o reemplaza) la ficha ampliada de un paquete. Lo usa el panel
+     * de administración para que los paquetes nuevos también tengan hotel,
+     * incluidos, itinerario y fotos.
+     */
+    public void guardarPorId(int id, DetallePaquete detalle) {
+        if (detalle == null) {
+            catalogoDetalles.remove(id);
+        } else {
+            catalogoDetalles.put(id, detalle);
+        }
+    }
+
+    /** Elimina la ficha asociada a un paquete. */
+    public void eliminar(int id) {
+        catalogoDetalles.remove(id);
+    }
 }

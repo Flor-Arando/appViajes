@@ -75,8 +75,8 @@
                                         rendered="#{usuarioBean.admin}"
                                         style="font-size: 0.875rem;"
                                         styleClass="link-warning text-decoration-none fw-semibold"/>
-                                <span class="text-white-50" aria-hidden="true"
-                                      rendered="#{usuarioBean.admin}">|</span>
+                                <h:outputText value="|" rendered="#{usuarioBean.admin}"
+                                              styleClass="text-white-50"/>
                                 <h:link outcome="/perfil" value="Ver perfil"
                                         style="font-size: 0.875rem;"
                                         styleClass="link-light text-decoration-underline"/>

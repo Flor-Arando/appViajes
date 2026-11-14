@@ -8,134 +8,164 @@
     template="/WEB-INF/templates/templateAgencia.xhtml">
 
     <!--
-        pago.xhtml: conversión a Jakarta Faces de pago.html.
+        pago.xhtml: pantalla de pago de un paquete.
 
-        - Usa la plantilla templateAgencia (cabecera/nav y pie de página).
-        - El resumen del pedido sale de PagoBean -> DetallePaqueteServicio.
-        - Los dos botones de pago ejecutan acciones del bean y muestran el
-          diálogo de éxito (p:dialog).
-        - pago.js se ha movido a /resources/js y se carga con h:outputScript.
+        - Cada método de pago tiene su propio h:form, así el envío de la tarjeta
+          no valida los campos de la transferencia ni al revés.
+        - Los botones hacen un envío completo (ajax="false"): el servidor valida,
+          cobra y vuelve a pintar la página con el diálogo de resultado visible.
+          Todo sin JavaScript propio.
+        - La validación es 100 % de servidor: required, f:validateLength,
+          f:validateRegex y los validadores de tarjeta, caducidad y aceptación.
     -->
 
     <ui:define name="title">Pago | MorfeoTrip</ui:define>
     <ui:define name="bannerTitulo">Finalizar reserva</ui:define>
     <ui:define name="bannerSubtitulo">Revisa tu paquete y elige cómo quieres pagarlo.</ui:define>
 
-    <ui:define name="head">
-        <!-- pago.js desde resources/js: validación y formato de los campos. -->
-        <h:outputScript library="js" name="pago.js"/>
-    </ui:define>
-
     <ui:define name="content">
 
         <!-- Con paquete seleccionado -->
         <h:panelGroup layout="block" rendered="#{not empty pagoBean.detalle.paquete}">
 
-            <h:form id="formPago">
+            <div class="row g-4">
 
-                <div class="row g-4">
+                <!-- RESUMEN DEL PEDIDO (componente composite) -->
+                <aside class="col-lg-5 order-lg-2">
+                    <pago:resumenPago detalle="#{pagoBean.detalle}"
+                                      viajeros="#{pagoBean.viajeros}"
+                                      precioPersona="#{pagoBean.precioPersonaFormateado}"
+                                      total="#{pagoBean.totalFormateado}"/>
+                </aside>
 
-                    <!-- RESUMEN DEL PEDIDO (componente composite) -->
-                    <aside class="col-lg-5 order-lg-2">
-                        <pago:resumenPago detalle="#{pagoBean.detalle}"
-                                          viajeros="#{pagoBean.viajeros}"
-                                          precioPersona="#{pagoBean.precioPersonaFormateado}"
-                                          total="#{pagoBean.totalFormateado}"/>
-                    </aside>
+                <!-- FORMULARIO DE PAGO -->
+                <section class="col-lg-7 order-lg-1">
+                    <div class="card border-0 rounded-4 shadow-sm">
+                        <div class="card-body p-4">
+                            <h2 class="h5 text-success mb-3">Método de pago</h2>
 
-                    <!-- FORMULARIO DE PAGO -->
-                    <section class="col-lg-7 order-lg-1">
-                        <div class="card border-0 rounded-4 shadow-sm">
-                            <div class="card-body p-4">
-                                <h2 class="h5 text-success mb-3">Método de pago</h2>
+                            <!-- Pestañas Bootstrap para cambiar entre tarjeta y transferencia. -->
+                            <ul class="nav nav-tabs mb-4" id="metodosPago" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active text-success fw-semibold" id="tarjeta-tab"
+                                            data-bs-toggle="tab" data-bs-target="#tarjeta-panel"
+                                            type="button" role="tab" aria-controls="tarjeta-panel" aria-selected="true">
+                                        Tarjeta
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link text-success fw-semibold" id="transferencia-tab"
+                                            data-bs-toggle="tab" data-bs-target="#transferencia-panel"
+                                            type="button" role="tab" aria-controls="transferencia-panel" aria-selected="false">
+                                        Transferencia bancaria
+                                    </button>
+                                </li>
+                            </ul>
 
-                                <!-- Pestañas Bootstrap para cambiar entre tarjeta y transferencia. -->
-                                <ul class="nav nav-tabs mb-4" id="metodosPago" role="tablist">
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link active text-success fw-semibold" id="tarjeta-tab" data-bs-toggle="tab"
-                                                data-bs-target="#tarjeta-panel"
-                                                type="button" role="tab" aria-controls="tarjeta-panel" aria-selected="true">
-                                            Tarjeta
-                                        </button>
-                                    </li>
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link text-success fw-semibold" id="transferencia-tab" data-bs-toggle="tab"
-                                                data-bs-target="#transferencia-panel"
-                                                type="button" role="tab" aria-controls="transferencia-panel" aria-selected="false">
-                                            Transferencia bancaria
-                                        </button>
-                                    </li>
-                                </ul>
+                            <div class="tab-content" id="metodosPagoContent">
 
-                                <div class="tab-content" id="metodosPagoContent">
+                                <!-- PAGO CON TARJETA -->
+                                <section class="tab-pane fade show active" id="tarjeta-panel" role="tabpanel"
+                                         aria-labelledby="tarjeta-tab" tabindex="0">
+                                    <h3 class="h6 text-success mb-3">Datos de la tarjeta</h3>
 
-                                    <!-- PAGO CON TARJETA -->
-                                    <section class="tab-pane fade show active" id="tarjeta-panel" role="tabpanel"
-                                             aria-labelledby="tarjeta-tab" tabindex="0">
-                                        <h3 class="h6 text-success mb-3">Datos de la tarjeta</h3>
-
-                                        <!-- Aviso resumen que rellena pago.js cuando la validación falla. -->
-                                        <div id="avisoPago" class="alert alert-danger d-none" role="alert"></div>
+                                    <h:form id="formTarjeta">
 
                                         <div class="mb-3">
-                                            <label for="titular" class="form-label">Nombre del titular</label>
-                                            <input type="text" class="form-control" id="titular" autocomplete="cc-name"
-                                                   placeholder="Como aparece en la tarjeta"/>
-                                            <div class="invalid-feedback" id="error-titular"></div>
+                                            <h:outputLabel for="titular" value="Nombre del titular" styleClass="form-label"/>
+                                            <p:inputText id="titular" value="#{pagoBean.titular}"
+                                                         styleClass="form-control #{component.valid ? '' : 'is-invalid'}"
+                                                         maxlength="60"
+                                                         required="true"
+                                                         requiredMessage="Escribe el nombre del titular."
+                                                         validatorMessage="Escribe el nombre del titular."
+                                                         placeholder="Como aparece en la tarjeta">
+                                                <f:validateLength minimum="3"/>
+                                            </p:inputText>
+                                            <div class="invalid-feedback d-block"><h:message for="titular"/></div>
                                         </div>
 
                                         <div class="mb-3">
-                                            <label for="numero" class="form-label">Número de tarjeta</label>
-                                            <input type="text" class="form-control" id="numero" inputmode="numeric"
-                                                   autocomplete="cc-number" placeholder="1234 5678 9012 3456" maxlength="19"/>
-                                            <div class="invalid-feedback" id="error-numero"></div>
+                                            <h:outputLabel for="numero" value="Número de tarjeta" styleClass="form-label"/>
+                                            <p:inputMask id="numero" value="#{pagoBean.numeroTarjeta}"
+                                                         mask="9999 9999 9999 9999"
+                                                         placeholder="1234 5678 9012 3456"
+                                                         styleClass="form-control #{component.valid ? '' : 'is-invalid'}"
+                                                         required="true"
+                                                         requiredMessage="Escribe el número de tarjeta.">
+                                                <f:validator validatorId="tarjetaValidator"/>
+                                            </p:inputMask>
+                                            <div class="invalid-feedback d-block"><h:message for="numero"/></div>
                                         </div>
 
                                         <div class="row">
                                             <div class="col-6 mb-3">
-                                                <label for="vencimiento" class="form-label">Vencimiento</label>
-                                                <input type="text" class="form-control" id="vencimiento" inputmode="numeric"
-                                                       autocomplete="cc-exp" placeholder="MM/AA" maxlength="5"/>
-                                                <div class="invalid-feedback" id="error-vencimiento"></div>
+                                                <h:outputLabel for="vencimiento" value="Vencimiento" styleClass="form-label"/>
+                                                <p:inputMask id="vencimiento" value="#{pagoBean.vencimiento}"
+                                                             mask="99/99"
+                                                             placeholder="MM/AA"
+                                                             styleClass="form-control #{component.valid ? '' : 'is-invalid'}"
+                                                             required="true"
+                                                             requiredMessage="Escribe la fecha de vencimiento.">
+                                                    <f:validator validatorId="caducidadValidator"/>
+                                                </p:inputMask>
+                                                <div class="invalid-feedback d-block"><h:message for="vencimiento"/></div>
                                             </div>
                                             <div class="col-6 mb-3">
-                                                <label for="cvv" class="form-label">CVV</label>
-                                                <input type="password" class="form-control" id="cvv" inputmode="numeric"
-                                                       autocomplete="cc-csc" placeholder="123" maxlength="4"/>
-                                                <div class="invalid-feedback" id="error-cvv"></div>
+                                                <h:outputLabel for="cvv" value="CVV" styleClass="form-label"/>
+                                                <p:inputText id="cvv" value="#{pagoBean.cvv}"
+                                                             styleClass="form-control #{component.valid ? '' : 'is-invalid'}"
+                                                             maxlength="4" placeholder="123"
+                                                             required="true"
+                                                             requiredMessage="Escribe el CVV."
+                                                             validatorMessage="El CVV tiene 3 o 4 dígitos.">
+                                                    <p:keyFilter regEx="/[0-9]/"/>
+                                                    <f:validateRegex pattern="\d{3,4}"/>
+                                                </p:inputText>
+                                                <div class="invalid-feedback d-block"><h:message for="cvv"/></div>
                                             </div>
                                         </div>
 
                                         <div class="mb-3">
-                                            <label for="email" class="form-label">Correo para el recibo</label>
-                                            <input type="email" class="form-control" id="email" autocomplete="email"
-                                                   placeholder="tu@correo.com"/>
-                                            <div class="invalid-feedback" id="error-email"></div>
+                                            <h:outputLabel for="email" value="Correo para el recibo" styleClass="form-label"/>
+                                            <p:inputText id="email" value="#{pagoBean.email}" type="email"
+                                                         styleClass="form-control #{component.valid ? '' : 'is-invalid'}"
+                                                         maxlength="120"
+                                                         required="true"
+                                                         requiredMessage="Escribe tu correo."
+                                                         validatorMessage="El correo no es válido."
+                                                         placeholder="tu@correo.com">
+                                                <f:validateRegex pattern="^[^\s@]+@[^\s@]+\.[^\s@]{2,}$"/>
+                                            </p:inputText>
+                                            <div class="invalid-feedback d-block"><h:message for="email"/></div>
                                         </div>
 
                                         <div class="form-check mb-4">
-                                            <input class="form-check-input" type="checkbox" id="terminos"/>
-                                            <label class="form-check-label small" for="terminos">
-                                                Acepto las condiciones de reserva y cancelación
-                                            </label>
-                                            <div class="invalid-feedback" id="error-terminos"></div>
+                                            <h:selectBooleanCheckbox id="terminos" value="#{pagoBean.terminos}"
+                                                                     styleClass="form-check-input #{component.valid ? '' : 'is-invalid'}"
+                                                                     mensajeAceptacion="Debes aceptar las condiciones de reserva.">
+                                                <f:validator validatorId="aceptacionValidator"/>
+                                            </h:selectBooleanCheckbox>
+                                            <h:outputLabel for="terminos" styleClass="form-check-label small"
+                                                           value="Acepto las condiciones de reserva y cancelación"/>
+                                            <div class="invalid-feedback d-block"><h:message for="terminos"/></div>
                                         </div>
 
-                                        <!-- onstart valida el formulario y, si devuelve false, no se envía. -->
                                         <p:commandButton value="Pagar #{pagoBean.totalFormateado}"
+                                                         icon="pi pi-credit-card"
                                                          action="#{pagoBean.pagarConTarjeta}"
-                                                         onstart="return validarPagoTarjeta();"
-                                                         update="formPago mensajes"
+                                                         ajax="false"
                                                          styleClass="btn bg-success text-white border-0 btn-lg w-100"/>
-                                    </section>
 
-                                    <!-- PAGO POR TRANSFERENCIA -->
-                                    <section class="tab-pane fade" id="transferencia-panel" role="tabpanel"
-                                             aria-labelledby="transferencia-tab" tabindex="0">
-                                        <h3 class="h6 text-success mb-3">Transferencia bancaria</h3>
+                                    </h:form>
+                                </section>
 
-                                        <!-- Aviso resumen que rellena pago.js cuando la validación falla. -->
-                                        <div id="avisoTransferencia" class="alert alert-danger d-none" role="alert"></div>
+                                <!-- PAGO POR TRANSFERENCIA -->
+                                <section class="tab-pane fade" id="transferencia-panel" role="tabpanel"
+                                         aria-labelledby="transferencia-tab" tabindex="0">
+                                    <h3 class="h6 text-success mb-3">Transferencia bancaria</h3>
+
+                                    <h:form id="formTransferencia">
 
                                         <div class="alert alert-warning" role="alert">
                                             <strong>Realiza el pago a esta cuenta si estás seguro de tu viaje</strong>
@@ -158,38 +188,76 @@
                                         </p>
 
                                         <div class="mb-3">
-                                            <label for="emailTransferencia" class="form-label">Correo de contacto</label>
-                                            <input type="email" class="form-control" id="emailTransferencia"
-                                                   autocomplete="email" placeholder="tu@correo.com"/>
-                                            <div class="invalid-feedback" id="error-emailTransferencia"></div>
+                                            <h:outputLabel for="emailTransferencia" value="Correo de contacto"
+                                                           styleClass="form-label"/>
+                                            <p:inputText id="emailTransferencia" value="#{pagoBean.emailTransferencia}"
+                                                         type="email"
+                                                         styleClass="form-control #{component.valid ? '' : 'is-invalid'}"
+                                                         maxlength="120"
+                                                         required="true"
+                                                         requiredMessage="Escribe un correo válido."
+                                                         validatorMessage="Escribe un correo válido."
+                                                         placeholder="tu@correo.com">
+                                                <f:validateRegex pattern="^[^\s@]+@[^\s@]+\.[^\s@]{2,}$"/>
+                                            </p:inputText>
+                                            <div class="invalid-feedback d-block"><h:message for="emailTransferencia"/></div>
                                         </div>
 
                                         <div class="form-check mb-4">
-                                            <input class="form-check-input" type="checkbox" id="confirmoTransferencia"/>
-                                            <label class="form-check-label" for="confirmoTransferencia">
-                                                Confirmo que he realizado la transferencia.
-                                            </label>
-                                            <div class="invalid-feedback" id="error-confirmoTransferencia"></div>
+                                            <h:selectBooleanCheckbox id="confirmoTransferencia"
+                                                                     value="#{pagoBean.confirmoTransferencia}"
+                                                                     styleClass="form-check-input #{component.valid ? '' : 'is-invalid'}"
+                                                                     mensajeAceptacion="Confirma que has realizado la transferencia.">
+                                                <f:validator validatorId="aceptacionValidator"/>
+                                            </h:selectBooleanCheckbox>
+                                            <h:outputLabel for="confirmoTransferencia" styleClass="form-check-label"
+                                                           value="Confirmo que he realizado la transferencia."/>
+                                            <div class="invalid-feedback d-block"><h:message for="confirmoTransferencia"/></div>
                                         </div>
 
                                         <p:commandButton value="Confirmar transferencia"
+                                                         icon="pi pi-check"
                                                          action="#{pagoBean.pagarConTransferencia}"
-                                                         onstart="return validarTransferencia();"
-                                                         update="formPago mensajes"
+                                                         ajax="false"
                                                          styleClass="btn bg-success text-white border-0 btn-lg w-100"/>
-                                    </section>
 
-                                </div>
+                                    </h:form>
+                                </section>
+
                             </div>
                         </div>
-                    </section>
+                    </div>
+                </section>
 
+            </div>
+
+            <!-- AVISO: hay que iniciar sesión para pagar -->
+            <p:dialog id="dialogoLogin" widgetVar="dialogoLogin" header="Inicia sesión"
+                      modal="true" responsive="true" draggable="false" resizable="false"
+                      visible="#{not pagoBean.logueado}" styleClass="rounded-4">
+                <div class="text-center p-2">
+                    <i class="pi pi-lock text-warning" style="font-size: 3rem;"></i>
+                    <h3 class="h5 fw-bold mt-3">Necesitas iniciar sesión</h3>
+                    <p class="text-secondary mb-2">
+                        Para completar la reserva y guardarla en tu historial tienes que
+                        entrar con tu cuenta.
+                    </p>
+                    <p class="small text-secondary mb-3">
+                        No se ha realizado ningún cobro.
+                    </p>
+                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                        <h:link outcome="/login" value="Iniciar sesión"
+                                styleClass="btn bg-success text-white border-0 px-4"/>
+                        <h:link outcome="/register" value="Crear cuenta"
+                                styleClass="btn btn-outline-secondary px-4"/>
+                    </div>
                 </div>
+            </p:dialog>
 
-            <!-- VENTANA EMERGENTE DE PAGO REALIZADO (dentro del formulario para poder refrescarla) -->
+            <!-- VENTANA EMERGENTE DE PAGO REALIZADO -->
             <p:dialog id="dialogoPago" widgetVar="dialogoPago" header="Pago realizado"
                       modal="true" responsive="true" draggable="false" resizable="false"
-                      styleClass="rounded-4">
+                      visible="#{pagoBean.pagoRealizado}" styleClass="rounded-4">
                 <div class="text-center p-2">
                     <i class="pi pi-check-circle text-success" style="font-size: 3rem;"></i>
                     <h3 class="h5 fw-bold mt-3">¡Pago completado con éxito!</h3>
@@ -206,8 +274,6 @@
                             styleClass="btn bg-success text-white border-0 px-4"/>
                 </div>
             </p:dialog>
-
-            </h:form>
 
         </h:panelGroup>
 

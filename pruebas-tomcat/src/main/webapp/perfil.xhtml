@@ -105,6 +105,20 @@
                                              placeholder="Tu nombre"/>
                             </div>
 
+                            <div class="mb-3">
+                                <h:outputLabel for="perfilUsuario" value="Nombre de usuario" styleClass="form-label"/>
+                                <p:inputText id="perfilUsuario"
+                                             value="#{usuarioBean.usernameEdicion}"
+                                             required="true"
+                                             requiredMessage="Indica tu nombre de usuario."
+                                             styleClass="form-control"
+                                             maxlength="20"
+                                             placeholder="Se usa para iniciar sesión"/>
+                                <div class="form-text">
+                                    Con este nombre entrarás en la web. Entre 3 y 20 caracteres.
+                                </div>
+                            </div>
+
                             <div class="mb-4">
                                 <h:outputLabel for="perfilEmail" value="Correo electrónico" styleClass="form-label"/>
                                 <p:inputText id="perfilEmail"
@@ -116,7 +130,7 @@
                             </div>
 
                             <div class="border-top pt-4 mb-4">
-                                <h3 class="h6 fw-bold text-secondary mb-3">Cambiar contraseña (opcional)</h3>
+                                <h3 class="h6 fw-bold text-secondary mb-3">Confirma con tu contraseña</h3>
 
                                 <div class="mb-3">
                                     <h:outputLabel for="perfilPassActual" value="Contraseña actual" styleClass="form-label"/>
@@ -124,8 +138,15 @@
                                                 value="#{usuarioBean.passwordActual}"
                                                 styleClass="form-control"
                                                 placeholder="Tu contraseña actual"
-                                                feedback="false"/>
+                                                feedback="false"
+                                                required="true"
+                                                requiredMessage="Introduce tu contraseña actual para guardar los cambios."/>
+                                    <div class="form-text">
+                                        Necesaria para guardar cualquier cambio en tu cuenta.
+                                    </div>
                                 </div>
+
+                                <h3 class="h6 fw-bold text-secondary mb-3">Cambiar contraseña (opcional)</h3>
 
                                 <div class="mb-3">
                                     <h:outputLabel for="perfilPassNueva" value="Nueva contraseña" styleClass="form-label"/>
@@ -143,7 +164,7 @@
                             <p:commandButton value="Guardar cambios"
                                              icon="pi pi-check"
                                              action="#{usuarioBean.actualizarPerfil}"
-                                             update="@form"
+                                             ajax="false"
                                              styleClass="btn bg-success text-white border-0 px-4"/>
 
                         </h:form>

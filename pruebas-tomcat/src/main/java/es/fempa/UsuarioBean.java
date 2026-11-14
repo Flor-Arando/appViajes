@@ -33,6 +33,7 @@ public class UsuarioBean implements Serializable {
 
     // Campos editables del perfil (se rellenan de forma perezosa).
     private String nombreEdicion;
+    private String usernameEdicion;
     private String emailEdicion;
     private String passwordActual;
     private String passwordNueva;
@@ -101,6 +102,7 @@ public class UsuarioBean implements Serializable {
         this.usuarioActual = null;
         this.usuarioAutenticado = null;
         this.nombreEdicion = null;
+        this.usernameEdicion = null;
         this.emailEdicion = null;
         this.passwordActual = null;
         this.passwordNueva = null;
@@ -151,6 +153,15 @@ public class UsuarioBean implements Serializable {
     }
     public void setNombreEdicion(String nombreEdicion) { this.nombreEdicion = nombreEdicion; }
 
+    public String getUsernameEdicion() {
+        if (usernameEdicion == null) {
+            Usuario u = getUsuarioAutenticado();
+            return u != null ? u.getUsername() : "";
+        }
+        return usernameEdicion;
+    }
+    public void setUsernameEdicion(String usernameEdicion) { this.usernameEdicion = usernameEdicion; }
+
     public String getEmailEdicion() {
         if (emailEdicion == null) {
             Usuario u = getUsuarioAutenticado();
@@ -171,17 +182,30 @@ public class UsuarioBean implements Serializable {
         Usuario usuario = getUsuarioAutenticado();
         if (usuario != null) {
             nombreEdicion = usuario.getNombre();
+            usernameEdicion = usuario.getUsername();
             emailEdicion = usuario.getEmail();
         }
     }
 
     // Guarda los cambios del perfil validándolos en el servidor.
+    // Exige siempre la contraseña actual, aunque solo se cambie el nombre.
     public String actualizarPerfil() {
         FacesContext context = FacesContext.getCurrentInstance();
         Usuario usuario = getUsuarioAutenticado();
 
         if (usuario == null) {
             return "/login?faces-redirect=true";
+        }
+
+        if (passwordActual == null || passwordActual.isEmpty()) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Introduce tu contraseña actual para guardar los cambios.", null));
+            return null;
+        }
+        if (!passwordActual.equals(usuario.getPassword())) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "La contraseña actual no es correcta.", null));
+            return null;
         }
 
         if (nombreEdicion == null || nombreEdicion.trim().isEmpty()) {
@@ -196,13 +220,21 @@ public class UsuarioBean implements Serializable {
             return null;
         }
 
-        // Cambio de contraseña opcional: exige la actual y una nueva válida.
+        // Nombre de usuario: formato y que no lo use otra cuenta.
+        String nuevoUsername = normalizeUsername(usernameEdicion);
+        if (!nuevoUsername.matches("^[a-z0-9._-]{3,20}$")) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+                    "El usuario debe tener entre 3 y 20 caracteres (letras, números, punto, guion).", null));
+            return null;
+        }
+        if (!nuevoUsername.equals(usuario.getUsername()) && usuariosStore.existe(nuevoUsername)) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+                    "Ese nombre de usuario ya está en uso.", null));
+            return null;
+        }
+
+        // Cambio de contraseña opcional: exige una nueva válida.
         if (passwordNueva != null && !passwordNueva.isEmpty()) {
-            if (passwordActual == null || !passwordActual.equals(usuario.getPassword())) {
-                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                        "La contraseña actual no es correcta.", null));
-                return null;
-            }
             if (!passwordNueva.matches("^(?=.*[A-Z])(?=.*\\d).{8,}$")) {
                 context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
                         "La nueva contraseña debe tener 8 caracteres, una mayúscula y un número.", null));
@@ -213,6 +245,10 @@ public class UsuarioBean implements Serializable {
 
         usuario.setNombre(nombreEdicion.trim());
         usuario.setEmail(emailEdicion.trim().toLowerCase(Locale.ROOT));
+        usuario.setUsername(nuevoUsername);
+        // La sesión guarda el nombre de usuario: hay que actualizarlo o el
+        // usuario dejaría de encontrarse y el login antiguo seguiría valiendo.
+        this.usuarioAutenticado = nuevoUsername;
 
         context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
                 "Perfil actualizado correctamente.", null));
@@ -259,6 +295,7 @@ public class UsuarioBean implements Serializable {
         public String getEmail() { return email; }
 
         public void setNombre(String nombre) { this.nombre = nombre; }
+        public void setUsername(String username) { this.username = username; }
         public void setEmail(String email) { this.email = email; }
         public void setPassword(String password) { this.password = password; }
 

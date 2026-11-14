@@ -10,7 +10,6 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import org.primefaces.PrimeFaces;
 
 import java.io.Serializable;
 import java.text.NumberFormat;
@@ -44,6 +43,16 @@ public class PagoBean implements Serializable {
     private String metodoPago = "";
     private String referencia = "";
     private boolean pagoRealizado;
+
+    /* Campos del formulario de pago (validados en el servidor). */
+    private String titular;
+    private String numeroTarjeta;
+    private String vencimiento;
+    private String cvv;
+    private String email;
+    private boolean terminos;
+    private String emailTransferencia;
+    private boolean confirmoTransferencia;
 
     /**
      * Lee el paquete y el nº de viajeros guardados en sesión por
@@ -85,10 +94,20 @@ public class PagoBean implements Serializable {
             return;
         }
 
+        // Sin sesión no se cobra nada ni se añade al historial: se pide login.
+        if (!isLogueado()) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
+                    FacesMessage.SEVERITY_WARN,
+                    "Inicia sesión para pagar",
+                    "Necesitas una cuenta para completar la reserva."));
+            // El diálogo de login se abre solo al repintar pago.xhtml.
+            return;
+        }
+
         metodoPago = metodo;
         referencia = "MT-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase(Locale.ROOT);
 
-        // Registra la compra en el historial del usuario (si hay sesión iniciada).
+        // Registra la compra en el historial del usuario autenticado.
         UsuarioBean.Usuario usuario = usuarioBean.getUsuarioAutenticado();
         if (usuario != null) {
             Reserva reserva = new Reserva(detalle.getPaquete(), LocalDate.now(), viajeros);
@@ -102,10 +121,8 @@ public class PagoBean implements Serializable {
                 "Pago realizado con éxito",
                 "Pago simulado correctamente."));
 
-        // Abre la ventana de pago realizado al terminar la petición AJAX.
-        // No se usa el atributo oncomplete porque el botón no se vuelve a
-        // renderizar y su expresión se quedaría con el valor inicial (false).
-        PrimeFaces.current().executeScript("PF('dialogoPago').show()");
+        // El diálogo de pago realizado se abre solo: pago.xhtml lo pinta
+        // con visible="#{pagoBean.pagoRealizado}" al recargar la página.
     }
 
     public DetallePaquete getDetalle() {
@@ -126,6 +143,75 @@ public class PagoBean implements Serializable {
 
     public boolean isPagoRealizado() {
         return pagoRealizado;
+    }
+
+    /* ¿Hay un usuario con sesión iniciada? Si no, no se permite pagar. */
+    public boolean isLogueado() {
+        return usuarioBean != null && usuarioBean.isLogged();
+    }
+
+    public String getTitular() {
+        return titular;
+    }
+
+    public void setTitular(String titular) {
+        this.titular = titular;
+    }
+
+    public String getNumeroTarjeta() {
+        return numeroTarjeta;
+    }
+
+    public void setNumeroTarjeta(String numeroTarjeta) {
+        this.numeroTarjeta = numeroTarjeta;
+    }
+
+    public String getVencimiento() {
+        return vencimiento;
+    }
+
+    public void setVencimiento(String vencimiento) {
+        this.vencimiento = vencimiento;
+    }
+
+    public String getCvv() {
+        return cvv;
+    }
+
+    public void setCvv(String cvv) {
+        this.cvv = cvv;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public boolean isTerminos() {
+        return terminos;
+    }
+
+    public void setTerminos(boolean terminos) {
+        this.terminos = terminos;
+    }
+
+    public String getEmailTransferencia() {
+        return emailTransferencia;
+    }
+
+    public void setEmailTransferencia(String emailTransferencia) {
+        this.emailTransferencia = emailTransferencia;
+    }
+
+    public boolean isConfirmoTransferencia() {
+        return confirmoTransferencia;
+    }
+
+    public void setConfirmoTransferencia(boolean confirmoTransferencia) {
+        this.confirmoTransferencia = confirmoTransferencia;
     }
 
     /* Precio por persona ya formateado. */
