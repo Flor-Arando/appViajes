@@ -1,0 +1,56 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="primefaces"
+    template="/WEB-INF/templates/templateAgencia.xhtml">
+
+    <ui:define name="title">
+        Reserva | MorfeoTrip Agencia de Viajes
+    </ui:define>
+
+    <ui:define name="bannerTitulo">
+        Completa tu reserva
+    </ui:define>
+
+    <ui:define name="bannerSubtitulo">
+        Los datos del paquete elegido viajarán contigo hasta aquí.
+    </ui:define>
+
+    <ui:define name="content">
+
+        <!-- =========================================================
+             PLACEHOLDER: esta página la desarrollará otro compañero.
+             Debe recibir el paquete seleccionado (sesión
+             "paqueteSeleccionado") y recoger los datos del viajero
+             para confirmar la reserva. Ver ReservaBean por venir.
+             ========================================================= -->
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+
+                <div class="card border-0 shadow-sm rounded-4 text-center p-5">
+
+                    <i class="pi pi-briefcase text-success" style="font-size: 4rem;"></i>
+
+                    <h1 class="h3 fw-bold mt-4 mb-2">Reserva · en construcción</h1>
+
+                    <p class="text-secondary mb-4">
+                        Esta página estará disponible próximamente. Aquí se completarán
+                        los datos del viajero y se confirmará la reserva del paquete.
+                    </p>
+
+                    <div class="d-flex justify-content-center gap-2">
+                        <p:button value="Volver al inicio"
+                                  icon="pi pi-home"
+                                  outcome="/dashboard"
+                                  styleClass="btn bg-success text-white border-0 px-4"/>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

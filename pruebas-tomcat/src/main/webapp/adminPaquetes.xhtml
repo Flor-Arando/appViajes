@@ -1,0 +1,196 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="primefaces"
+    template="/WEB-INF/templates/templateAgencia.xhtml">
+
+    <ui:define name="title">Panel de administración | MorfeoTrip</ui:define>
+    <ui:define name="bannerTitulo">Panel de administración</ui:define>
+    <ui:define name="bannerSubtitulo">Gestiona los paquetes de viaje de la web.</ui:define>
+
+    <ui:define name="content">
+
+        <!-- Sólo visible para el administrador -->
+        <h:panelGroup rendered="#{not usuarioBean.admin}" layout="block"
+                      styleClass="card border-0 shadow-sm rounded-4 text-center p-5">
+            <i class="pi pi-lock text-danger" style="font-size: 3rem;"></i>
+            <h1 class="h3 mt-3">Acceso restringido</h1>
+            <p class="text-secondary">Esta sección sólo está disponible para el administrador.</p>
+            <h:link outcome="/dashboard" value="Volver al inicio"
+                    styleClass="btn bg-success text-white border-0 px-4 align-self-center"/>
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{usuarioBean.admin}" layout="block">
+
+            <div class="row justify-content-center g-4">
+
+                <!-- =====================================================
+                     LISTADO DE PAQUETES
+                     ===================================================== -->
+                <div class="col-12 col-xl-7">
+                    <div class="card border-0 shadow-sm rounded-4 h-100">
+                        <div class="card-body p-4">
+
+                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+                                <h2 class="h4 fw-bold mb-0">
+                                    <i class="pi pi-box text-success me-2"></i>Paquetes
+                                    <span class="badge bg-success ms-2">#{adminPaquetesBean.paquetes.size()}</span>
+                                </h2>
+                            </div>
+
+                            <h:form id="formAdmin">
+
+                                <div class="mb-3 text-end">
+                                    <p:commandButton value="Nuevo paquete"
+                                                     icon="pi pi-plus"
+                                                     actionListener="#{adminPaquetesBean.nuevo}" ajax="false"
+                                                     styleClass="btn bg-success text-white border-0 px-3"/>
+                                </div>
+
+                                <p:growl id="mensajesAdmin" showDetail="false" life="4000"/>
+
+                                <p:dataTable value="#{adminPaquetesBean.paquetes}"
+                                             var="p"
+                                             rows="8"
+                                             paginator="true"
+                                             paginatorTemplate="{PreviousPageLink} {PageLinks} {NextPageLink}"
+                                             emptyMessage="No hay paquetes. Crea el primero."
+                                             styleClass="table table-borderless align-middle mb-0">
+
+                                    <p:column headerText="Paquete" style="width: 60%;">
+                                        <div class="fw-semibold">#{p.titulo}</div>
+                                        <small class="text-secondary">#{p.destino} · #{p.duracion}</small>
+                                    </p:column>
+
+                                    <p:column headerText="Precio" style="width: 18%;">
+                                        <strong class="text-success">#{p.precioFormateado}</strong>
+                                    </p:column>
+
+                                    <p:column headerText="Acciones" style="width: 22%;">
+                                        <div class="d-flex gap-2">
+                                            <p:commandButton icon="pi pi-pencil"
+                                                             title="Editar"
+                                                             actionListener="#{adminPaquetesBean.editar(p)}" ajax="false"
+                                                             styleClass="btn btn-sm bg-light border"/>
+                                            <p:commandButton icon="pi pi-trash"
+                                                             title="Eliminar"
+                                                             actionListener="#{adminPaquetesBean.eliminar(p)}" ajax="false"
+                                                             styleClass="btn btn-sm bg-danger text-white border-0">
+                                                <p:confirm header="Eliminar paquete"
+                                                           message="¿Seguro que quieres eliminar este paquete?"
+                                                           icon="pi pi-exclamation-triangle"/>
+                                            </p:commandButton>
+                                        </div>
+                                    </p:column>
+
+                                </p:dataTable>
+
+                            </h:form>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- =====================================================
+                     FORMULARIO ALTA / EDICIÓN
+                     ===================================================== -->
+                <div class="col-12 col-xl-5">
+                    <div class="card border-0 shadow-sm rounded-4 h-100">
+                        <div class="card-body p-4">
+
+                            <h2 class="h4 fw-bold mb-4">
+                                <i class="pi pi-pencil text-success me-2"></i>
+                                #{adminPaquetesBean.modoEdicion ? 'Editar paquete' : 'Nuevo paquete'}
+                            </h2>
+
+                            <h:panelGroup rendered="#{empty adminPaquetesBean.edicion}" layout="block"
+                                          styleClass="text-secondary small">
+                                <i class="pi pi-info-circle me-2"></i>
+                                Pulsa "Nuevo paquete" o el lápiz de un paquete para editar sus datos aquí.
+                            </h:panelGroup>
+
+                            <h:form id="formEdicion">
+                            <h:panelGroup layout="block" rendered="#{not empty adminPaquetesBean.edicion}">
+
+                                <div class="mb-3">
+                                    <h:outputLabel for="titulo" value="Título" styleClass="form-label"/>
+                                    <p:inputText id="titulo" value="#{adminPaquetesBean.edicion.titulo}"
+                                                 styleClass="form-control" required="true"
+                                                 requiredMessage="El título es obligatorio."/>
+                                </div>
+
+                                <div class="mb-3">
+                                    <h:outputLabel for="destino" value="Destino" styleClass="form-label"/>
+                                    <p:inputText id="destino" value="#{adminPaquetesBean.edicion.destino}"
+                                                 styleClass="form-control" required="true"
+                                                 requiredMessage="El destino es obligatorio."
+                                                 placeholder="Ciudad, País"/>
+                                </div>
+
+                                <div class="mb-3">
+                                    <h:outputLabel for="duracion" value="Duración" styleClass="form-label"/>
+                                    <p:inputText id="duracion" value="#{adminPaquetesBean.edicion.duracion}"
+                                                 styleClass="form-control" required="true"
+                                                 requiredMessage="La duración es obligatoria."
+                                                 placeholder="5 días / 4 noches"/>
+                                </div>
+
+                                <div class="row g-2 mb-3">
+                                    <div class="col-6">
+                                        <h:outputLabel for="precio" value="Precio (€)" styleClass="form-label"/>
+                                        <p:inputNumber id="precio"
+                                                       value="#{adminPaquetesBean.edicion.precio}"
+                                                       decimalPlaces="0" minValue="1"
+                                                       styleClass="form-control w-100"/>
+                                    </div>
+                                    <div class="col-6">
+                                        <h:outputLabel for="valoracion" value="Valoración (0-5)" styleClass="form-label"/>
+                                        <p:inputNumber id="valoracion"
+                                                       value="#{adminPaquetesBean.edicion.valoracion}"
+                                                       decimalPlaces="1" minValue="0" maxValue="5"
+                                                       styleClass="form-control w-100"/>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <h:outputLabel for="imagen" value="URL de imagen" styleClass="form-label"/>
+                                    <p:inputText id="imagen" value="#{adminPaquetesBean.edicion.imagen}"
+                                                 styleClass="form-control"
+                                                 placeholder="https://..."/>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h:outputLabel for="descripcion" value="Descripción" styleClass="form-label"/>
+                                    <p:inputTextarea id="descripcion"
+                                                     value="#{adminPaquetesBean.edicion.descripcion}"
+                                                     rows="3" styleClass="form-control"/>
+                                </div>
+
+                                <div class="d-flex gap-2">
+                                    <p:commandButton value="Guardar"
+                                                     icon="pi pi-check"
+                                                     action="#{adminPaquetesBean.guardar}"
+                                                     ajax="false"
+                                                     styleClass="btn bg-success text-white border-0 px-4"/>
+                                    <p:commandButton value="Cancelar"
+                                                     actionListener="#{adminPaquetesBean.cancelar}"
+                                                     ajax="false"
+                                                     styleClass="btn btn-outline-secondary px-4"/>
+                                </div>
+                            </h:panelGroup>
+
+                            </h:form>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </h:panelGroup>
+
+    </ui:define>
+
+</ui:composition>

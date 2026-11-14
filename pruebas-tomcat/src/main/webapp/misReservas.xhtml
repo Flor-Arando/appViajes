@@ -1,0 +1,178 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="primefaces"
+    template="/WEB-INF/templates/templateAgencia.xhtml">
+
+    <ui:define name="title">
+        Mis reservas | MorfeoTrip Agencia de Viajes
+    </ui:define>
+
+    <ui:define name="bannerTitulo">
+        Mis reservas
+    </ui:define>
+
+    <ui:define name="bannerSubtitulo">
+        Consulta los viajes que has reservado con MorfeoTrip.
+    </ui:define>
+
+    <ui:define name="content">
+
+        <!-- =========================================================
+             MIS RESERVAS
+             ========================================================= -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-12 col-xl-10">
+
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                  <h:form id="formReservas">
+
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+                        <h2 class="h4 fw-bold mb-0">
+                            <i class="pi pi-ticket text-success me-2"></i>Tus reservas
+                        </h2>
+                        <span class="badge bg-success fs-6">
+                            #{reservasBean.reservas.size()} viaje(s) · #{reservasBean.totalViajeros} viajero(s)
+                        </span>
+                    </div>
+
+                    <p:dataTable value="#{reservasBean.reservas}"
+                                 var="reserva"
+                                 paginator="true"
+                                 rows="5"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 currentPageReportTemplate="Mostrando {startRecord}-{endRecord} de {totalRecords}"
+                                 emptyMessage="Todavía no tienes ninguna reserva."
+                                 styleClass="table table-borderless align-middle mb-0">
+
+                        <p:column headerText="Código" style="width: 14%;">
+                            <strong class="text-success">#{reserva.codigo}</strong>
+                        </p:column>
+
+                        <p:column headerText="Paquete" sortBy="#{reserva.titulo}" style="width: 30%;">
+                            <div class="fw-semibold">#{reserva.titulo}</div>
+                            <small class="text-secondary">#{reserva.destino}</small>
+                        </p:column>
+
+                        <p:column headerText="Fecha reserva" sortBy="#{reserva.fechaReserva}" style="width: 16%;">
+                            #{reserva.fechaReservaTexto}
+                        </p:column>
+
+                        <p:column headerText="Viajeros" style="width: 10%;">
+                            <span class="badge bg-light text-dark border">#{reserva.viajeros}</span>
+                        </p:column>
+
+                        <p:column headerText="Precio" style="width: 14%;">
+                            <strong>#{reserva.totalFormateado}</strong>
+                        </p:column>
+
+                        <p:column headerText="Estado" style="width: 14%;">
+                            <p:badge value="#{reserva.estado}"
+                                     severity="#{reserva.estado eq 'CONFIRMADA' ? 'success' : 'warning'}"/>
+                        </p:column>
+
+                        <p:column headerText="Detalle" style="width: 14%;">
+                            <p:commandButton value="Ver detalle"
+                                             icon="pi pi-search"
+                                             actionListener="#{reservasBean.seleccionar(reserva)}"
+                                             update=":dialogoDetalleReserva"
+                                             oncomplete="PF('dialogoDetalleReserva').show()"
+                                             styleClass="btn btn-sm bg-success text-white border-0"/>
+                        </p:column>
+
+                    </p:dataTable>
+
+                  </h:form>
+                </div>
+
+            </div>
+        </div>
+
+
+
+        <!-- =========================================================
+             DETALLE DE UNA RESERVA (ficha completa del paquete)
+             ========================================================= -->
+        <p:dialog id="dialogoDetalleReserva" widgetVar="dialogoDetalleReserva"
+                  header="Detalle de la reserva" modal="true" responsive="true"
+                  draggable="false" resizable="false" width="720"
+                  styleClass="rounded-4">
+
+            <h:panelGroup layout="block" rendered="#{not empty reservasBean.seleccionada}">
+
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                    <div>
+                        <div class="h5 fw-bold mb-0">#{reservasBean.seleccionada.titulo}</div>
+                        <small class="text-secondary">
+                            #{reservasBean.seleccionada.destino} ·
+                            #{reservasBean.detalleSeleccionado.paquete.duracion}
+                        </small>
+                    </div>
+                    <p:badge value="#{reservasBean.seleccionada.estado}"
+                             severity="#{reservasBean.seleccionada.estado eq 'CONFIRMADA' ? 'success' : 'warning'}"
+                             styleClass="fs-6"/>
+                </div>
+
+                <h:graphicImage value="#{reservasBean.detalleSeleccionado.imagen}"
+                                alt="#{reservasBean.seleccionada.titulo}"
+                                styleClass="rounded-3 w-100 mb-3"
+                                style="height: 180px; object-fit: cover;"/>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-6 col-md-3">
+                        <div class="bg-light rounded-3 p-2 text-center h-100">
+                            <small class="text-secondary d-block">Código</small>
+                            <strong class="text-success">#{reservasBean.seleccionada.codigo}</strong>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="bg-light rounded-3 p-2 text-center h-100">
+                            <small class="text-secondary d-block">Fecha</small>
+                            <strong>#{reservasBean.seleccionada.fechaReservaTexto}</strong>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="bg-light rounded-3 p-2 text-center h-100">
+                            <small class="text-secondary d-block">Viajeros</small>
+                            <strong>#{reservasBean.seleccionada.viajeros}</strong>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="bg-light rounded-3 p-2 text-center h-100">
+                            <small class="text-secondary d-block">Total</small>
+                            <strong class="text-success">#{reservasBean.seleccionada.totalFormateado}</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <span class="small text-secondary d-block">Alojamiento</span>
+                    <span>#{reservasBean.detalleSeleccionado.hotel}</span>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="fw-semibold mb-1">Incluido</div>
+                        <ui:repeat value="#{reservasBean.detalleSeleccionado.incluidos}" var="incluido">
+                            <small class="d-block text-secondary">
+                                <i class="pi pi-check text-success me-1"></i>#{incluido}
+                            </small>
+                        </ui:repeat>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="fw-semibold mb-1">Itinerario</div>
+                        <ui:repeat value="#{reservasBean.detalleSeleccionado.itinerario}" var="dia">
+                            <small class="d-block text-secondary">#{dia}</small>
+                        </ui:repeat>
+                    </div>
+                </div>
+
+            </h:panelGroup>
+
+        </p:dialog>
+
+    </ui:define>
+
+</ui:composition>

@@ -1,20 +1,29 @@
 package es.fempa;
 
+import es.fempa.modelo.Reserva;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.io.Serializable;
 
+/**
+ * Estado de sesión del usuario: quién está logueado y edición de perfil.
+ * La lista de cuentas vive en UsuariosStore (@ApplicationScoped) para que
+ * cerrar sesión NO borre los usuarios registrados.
+ */
 @Named
 @SessionScoped
 public class UsuarioBean implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private List<Usuario> usuariosRegistrados = new ArrayList<>();
+    @Inject
+    private UsuariosStore usuariosStore;
+
     // Usuario autenticado en la sesión actual; null mientras no se inicia sesión.
     private Usuario usuarioActual;
     private String nombre;
@@ -22,41 +31,33 @@ public class UsuarioBean implements Serializable {
     private String usuarioAutenticado;
     private int value = 50;
 
-    public UsuarioBean() {
-        usuariosRegistrados.add(new Usuario("Administrador", "admin", "1234"));
-    }
+    // Campos editables del perfil (se rellenan de forma perezosa).
+    private String nombreEdicion;
+    private String emailEdicion;
+    private String passwordActual;
+    private String passwordNueva;
 
     public String getSaludo() {
         return "HOla soy un saludo estático";
     }
 
     public List<Usuario> getUsuariosRegistrados() {
-        return usuariosRegistrados;
+        return usuariosStore.getUsuarios();
     }
 
     public boolean existeUsuario(String username) {
-        String normalizedUsername = normalizeUsername(username);
-        if (normalizedUsername.isEmpty()) {
-            return false;
-        }
-
-        for (Usuario usuario : usuariosRegistrados) {
-            if (usuario.getUsername().equalsIgnoreCase(normalizedUsername)) {
-                return true;
-            }
-        }
-        return false;
+        return usuariosStore.existe(username);
     }
 
     public boolean agregarUsuario(String nombre, String username, String password, String email) {
         String normalizedUsername = normalizeUsername(username);
         if (nombre == null || nombre.isBlank() || normalizedUsername.isEmpty()
                 || password == null || password.isEmpty() || email == null || email.isBlank()
-                || existeUsuario(normalizedUsername)) {
+                || usuariosStore.existe(normalizedUsername)) {
             return false;
         }
 
-        usuariosRegistrados.add(new Usuario(nombre.trim(), normalizedUsername, password, email.trim()));
+        usuariosStore.agregar(new Usuario(nombre.trim(), normalizedUsername, password, email.trim()));
         return true;
     }
 
@@ -66,15 +67,12 @@ public class UsuarioBean implements Serializable {
             return false;
         }
 
-        for (Usuario usuario : usuariosRegistrados) {
-            if (usuario.getUsername().equalsIgnoreCase(normalizedUsername)
-                    && usuario.getPassword().equals(password)) {
-                // Guarda el usuario en la sesión: es lo que hace estar "logueado".
-                this.usuarioActual = usuario;
-                // También lo mantiene para getUsuarioAutenticado()/eliminarCuenta().
-                usuarioAutenticado = usuario.getUsername();
-                return true;
-            }
+        Usuario usuario = usuariosStore.buscar(normalizedUsername);
+        if (usuario != null && usuario.getPassword().equals(password)) {
+            // Sólo marca quién está logueado en esta sesión.
+            this.usuarioActual = usuario;
+            this.usuarioAutenticado = usuario.getUsername();
+            return true;
         }
         return false;
     }
@@ -84,22 +82,28 @@ public class UsuarioBean implements Serializable {
         return usuarioActual != null;
     }
 
+    // True si el usuario en sesión es el administrador.
+    public boolean isAdmin() {
+        return usuarioActual != null && "admin".equalsIgnoreCase(usuarioActual.getUsername());
+    }
+
     // Nombre para mostrar en la cabecera; vacío si no hay sesión iniciada.
     public String getNombreUsuario() {
         return usuarioActual == null ? "" : usuarioActual.getNombre();
     }
 
-    // Cierra la sesión: vacía el usuario actual y invalida la HttpSession.
+    /**
+     * Cierra la sesión: sólo desmarca al usuario actual.
+     * NO invalida la HttpSession ni elimina usuarios: las cuentas siguen
+     * existiendo en UsuariosStore (@ApplicationScoped) mientras la app viva.
+     */
     public String logout() {
         this.usuarioActual = null;
         this.usuarioAutenticado = null;
-        FacesContext context = FacesContext.getCurrentInstance();
-        Object rawSession = context.getExternalContext().getSession(false);
-        if (rawSession instanceof jakarta.servlet.http.HttpSession session) {
-            session.invalidate();
-        } else {
-            context.getExternalContext().invalidateSession();
-        }
+        this.nombreEdicion = null;
+        this.emailEdicion = null;
+        this.passwordActual = null;
+        this.passwordNueva = null;
         return "dashboard?faces-redirect=true";
     }
 
@@ -135,22 +139,97 @@ public class UsuarioBean implements Serializable {
         if (usuarioAutenticado == null) {
             return null;
         }
-        for (Usuario usuario : usuariosRegistrados) {
-            if (usuario.getUsername().equalsIgnoreCase(usuarioAutenticado)) {
-                return usuario;
-            }
+        return usuariosStore.buscar(usuarioAutenticado);
+    }
+
+    public String getNombreEdicion() {
+        if (nombreEdicion == null) {
+            Usuario u = getUsuarioAutenticado();
+            return u != null ? u.getNombre() : "";
         }
+        return nombreEdicion;
+    }
+    public void setNombreEdicion(String nombreEdicion) { this.nombreEdicion = nombreEdicion; }
+
+    public String getEmailEdicion() {
+        if (emailEdicion == null) {
+            Usuario u = getUsuarioAutenticado();
+            return u != null ? u.getEmail() : "";
+        }
+        return emailEdicion;
+    }
+    public void setEmailEdicion(String emailEdicion) { this.emailEdicion = emailEdicion; }
+
+    public String getPasswordActual() { return passwordActual; }
+    public void setPasswordActual(String passwordActual) { this.passwordActual = passwordActual; }
+
+    public String getPasswordNueva() { return passwordNueva; }
+    public void setPasswordNueva(String passwordNueva) { this.passwordNueva = passwordNueva; }
+
+    // Precarga los campos editables con los datos del usuario autenticado.
+    public void prepararEdicion() {
+        Usuario usuario = getUsuarioAutenticado();
+        if (usuario != null) {
+            nombreEdicion = usuario.getNombre();
+            emailEdicion = usuario.getEmail();
+        }
+    }
+
+    // Guarda los cambios del perfil validándolos en el servidor.
+    public String actualizarPerfil() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        Usuario usuario = getUsuarioAutenticado();
+
+        if (usuario == null) {
+            return "/login?faces-redirect=true";
+        }
+
+        if (nombreEdicion == null || nombreEdicion.trim().isEmpty()) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+                    "El nombre no puede estar vacío.", null));
+            return null;
+        }
+
+        if (emailEdicion == null || !emailEdicion.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+                    "Escribe un correo electrónico válido.", null));
+            return null;
+        }
+
+        // Cambio de contraseña opcional: exige la actual y una nueva válida.
+        if (passwordNueva != null && !passwordNueva.isEmpty()) {
+            if (passwordActual == null || !passwordActual.equals(usuario.getPassword())) {
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        "La contraseña actual no es correcta.", null));
+                return null;
+            }
+            if (!passwordNueva.matches("^(?=.*[A-Z])(?=.*\\d).{8,}$")) {
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+                        "La nueva contraseña debe tener 8 caracteres, una mayúscula y un número.", null));
+                return null;
+            }
+            usuario.setPassword(passwordNueva);
+        }
+
+        usuario.setNombre(nombreEdicion.trim());
+        usuario.setEmail(emailEdicion.trim().toLowerCase(Locale.ROOT));
+
+        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+                "Perfil actualizado correctamente.", null));
+        prepararEdicion();
+        passwordActual = null;
+        passwordNueva = null;
         return null;
     }
 
-    // Elimina la cuenta actual y cierra la sesión.
+    // Elimina la cuenta actual y cierra la sesión (aquí sí se borra la cuenta).
     public String eliminarCuenta() {
         Usuario usuario = getUsuarioAutenticado();
         if (usuario != null) {
-            usuariosRegistrados.remove(usuario);
+            usuariosStore.eliminar(usuario);
         }
-        usuarioAutenticado = null;
-        FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+        this.usuarioActual = null;
+        this.usuarioAutenticado = null;
         return "/login?faces-redirect=true";
     }
 
@@ -161,6 +240,7 @@ public class UsuarioBean implements Serializable {
         private String username;
         private String password;
         private String email;
+        private final List<Reserva> reservas = new ArrayList<>();
 
         public Usuario(String nombre, String username, String password) {
             this(nombre, username, password, "");
@@ -173,20 +253,23 @@ public class UsuarioBean implements Serializable {
             this.email = email;
         }
 
-        public String getNombre() {
-            return nombre;
-        }
+        public String getNombre() { return nombre; }
+        public String getUsername() { return username; }
+        public String getPassword() { return password; }
+        public String getEmail() { return email; }
 
-        public String getUsername() {
-            return username;
-        }
+        public void setNombre(String nombre) { this.nombre = nombre; }
+        public void setEmail(String email) { this.email = email; }
+        public void setPassword(String password) { this.password = password; }
 
-        public String getPassword() {
-            return password;
-        }
+        /** Historial de viajes del usuario. */
+        public List<Reserva> getReservas() { return reservas; }
 
-        public String getEmail() {
-            return email;
+        /** Añade una reserva al historial. */
+        public void addReserva(Reserva reserva) {
+            if (reserva != null) {
+                reservas.add(reserva);
+            }
         }
     }
 
