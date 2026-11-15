@@ -4,7 +4,7 @@ Aplicación web académica de una agencia de viajes: permite buscar paquetes, ve
 
 ## Autores
 
-- Flor Arango
+- Flor Arando
 - Josep Caiza
 - Daniel Ochoa
 
